@@ -65,10 +65,9 @@ public class Sabotage extends Card{
     if(project_card == null){
       return p.getName() + " spent Sabotage but there were no cards to trash.";
     }else if(lawyers > 0){
-      return p.getName() + " spent Sabotage and trashed " + game.trash_pile.printRange(game.trash_pile.size()-1-lawyers, lawyers) + " in row " + project_card[0] +".";
+      return p.getName() + " spent Sabotage and trashed " + game.trash_pile.printRange(game.trash_pile.size()-lawyers, lawyers) + " in row " + project_card[0] +".";
     }else{
-      // Sabotage is on top after spending, so the card it trashed it right under that.
-      return p.getName() + " spent Sabotage and trashed " + game.trash_pile.getCard(game.trash_pile.size()-2).name + " in row " + project_card[0] +".";
+      return p.getName() + " spent Sabotage and trashed " + game.trash_pile.getCard(game.trash_pile.size()-1).name + " in row " + project_card[0] +".";
     }
   }
 

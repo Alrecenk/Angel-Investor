@@ -9,8 +9,8 @@ public class UnknownCard extends Card{
   
   public static String UNKNOWN_CARD_NAME = "Unknown";
   
-  int place, index;
-  Deck possible_cards;
+  public int place, index;
+  public Deck possible_cards;
   Player call_back;
   
   

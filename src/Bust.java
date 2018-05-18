@@ -60,9 +60,9 @@ public class Bust extends Card{
     if(trashed == 0){
       return p.getName() + " spent Bust, which did nothing.";
     }else if(lawyers > 0){
-      return p.getName() + " spent Bust and trashed " + game.trash_pile.printRange(game.trash_pile.size()-1-lawyers, lawyers) + ".";
+      return p.getName() + " spent Bust and trashed " + game.trash_pile.printRange(game.trash_pile.size()-lawyers, lawyers) + ".";
     }else{
-      return p.getName() + " spent Bust, which trashed " + game.trash_pile.printRange( game.trash_pile.size()-1-trashed,trashed) +"." ;
+      return p.getName() + " spent Bust, which trashed " + game.trash_pile.printRange( game.trash_pile.size()-trashed,trashed) +"." ;
     }
   }
 

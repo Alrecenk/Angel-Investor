@@ -64,7 +64,7 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
 
   public void setUpGame(){
     human = new HumanPlayer();
-    player = new Player[]{new HumanPlayer(), new RandomPlayer(), new RandomPlayer()};
+    player = new Player[]{human, new RandomPlayer()};
     Deck main_deck = new Deck();
     main_deck.addCopies(new ViralMarketing(), 13);
     main_deck.addCopies(new Capital(), 10);

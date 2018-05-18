@@ -8,7 +8,7 @@ public abstract class Player {
   protected int fame = 0 ; // Current score of player.
   protected int player_number; // Player's position on the table and money type.
   
-  // Special locations in the game, >= are the projects
+  // Special locations in the game, >= 0 are the projects
   public static int MAIN_DECK= -1, CASH_RESERVE = -2, TRASH = -3, KEEP_CARD = -4, HAND = -5, CHOICE = -6, NOWHERE = -7;
   // special indices
   public static int DECK_INDEX = -1, DISCARD_INDEX = -2;

@@ -22,9 +22,6 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 /* A class with various image utility functions
  * such as conversion between various formats
@@ -666,43 +663,6 @@ public class ImageUtility {
 	//where AABBs given as xmin,ymin,xmax,ymax
 	public static double[] AABBintersect(double[] a, double[] b){
 		return new double[]{Math.max(a[0], b[0]),Math.max(a[1], b[1]), Math.min(a[2], b[2]),Math.min(a[3], b[3])};
-	}
-
-	//Saves a buffered image to disk as jpeg with the given percentage quality
-	public static void saveImage(BufferedImage bi, File file, int quality){
-		FileOutputStream fos = null;
-		BufferedOutputStream bos = null;
-		try{
-			fos = new FileOutputStream(file);
-			bos = new BufferedOutputStream(fos);
-			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(bos);
-			JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(bi);
-			quality = Math.max(0, Math.min(quality, 100));
-			param.setQuality((float) quality / 100.0f, false);
-			encoder.setJPEGEncodeParam(param);
-			encoder.encode(bi);
-		}catch (FileNotFoundException fnfe){
-			fnfe.printStackTrace();
-		}
-		catch (IOException ioe){
-			ioe.printStackTrace();
-		}finally{
-			if (bos != null){
-				try{
-					bos.close();
-				}
-				catch (IOException ioe){
-					ioe.printStackTrace();
-				}
-			}
-			if (fos != null){
-				try{
-					fos.close();
-				}catch (IOException ioe){
-					ioe.printStackTrace();
-				}
-			}
-		}
 	}
 
 	// Converts a float image to a list of vectors, where each vector contains a patch either of one color or all colors.

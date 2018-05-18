@@ -13,7 +13,7 @@ public class SpendCard extends Event{
     int index = readChoice();
     if(index >= 0 && index < p.getHand().size()){
       spent_card = p.getHand().removeCard(index);
-      game.trash_pile.add(spent_card);
+      game.trash_pile.add(spent_card); // TODO order was changed to trash spent card before calling. Likely broke some prints of card trashing cards.
       spent_card.spend(p, game, this);
     }
   }

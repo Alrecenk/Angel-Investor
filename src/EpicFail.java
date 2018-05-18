@@ -55,10 +55,9 @@ public class EpicFail extends Card{
     if(trashed == 0){
       return p.getName() + " spent Epic Fail on an empty project("+row+"), which did nothing.";
     }else if(lawyers > 0){
-      return p.getName() + " spent Epic Fail and trashed " + game.trash_pile.printRange(game.trash_pile.size()-1-lawyers, lawyers) + " in row " + row +".";
+      return p.getName() + " spent Epic Fail and trashed " + game.trash_pile.printRange(game.trash_pile.size()-lawyers, lawyers) + " in row " + row +".";
     }else{
-      //TODO fix bug where spent epic fail may list itself as one of the trashed cards
-      return p.getName() + " spent Epic Fail on row " + row +", which trashed " + game.trash_pile.printRange( game.trash_pile.size()-1-trashed,trashed) +"." ;
+      return p.getName() + " spent Epic Fail on row " + row +", which trashed " + game.trash_pile.printRange( game.trash_pile.size()-trashed,trashed) +"." ;
     }
   }
 

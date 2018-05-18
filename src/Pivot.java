@@ -63,7 +63,7 @@ public class Pivot extends Card{
     if(keep_or_trash == Player.KEEP_CARD){
       s+= " and chose to put the card back.";
     }else if(keep_or_trash == Player.TRASH){
-      s+= " and chose to trash " + game.trash_pile.getCard(game.trash_pile.size()-2).name +"."; // Pivot is on top so trashed card is below it.
+      s+= " and chose to trash " + game.trash_pile.getCard(game.trash_pile.size()-1).name +"."; 
     }
     return s;
   }
@@ -83,7 +83,7 @@ public class Pivot extends Card{
     if(keep_or_trash == Player.KEEP_CARD){
       s+= " and chose to put the card back.";
     }else if(keep_or_trash == Player.TRASH){
-      s+= " and chose to trash " + game.trash_pile.getCard(game.trash_pile.size()-1).name +"."; // Trashed card is on top
+      s+= " and chose to trash " + game.trash_pile.getCard(game.trash_pile.size()-1).name +"."; 
     }
     return s;
   }
