@@ -35,7 +35,6 @@ public String spendPrint(Player p, Game game, SpendCard e) {
   }else{
     int project = project_card[0];
     Deck discard = game.start_ups.get(project).discard;
-    // Sabotage is on top after spending, so the card is trashed it right under that.
     return p.getName() + " spent Delay and discarded " + discard.getCard(discard.size()-1).name + " in row " + project +".";
   }
 }
