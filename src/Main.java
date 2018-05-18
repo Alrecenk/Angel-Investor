@@ -413,7 +413,8 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
         human.setPlay(new SpendCard(selected_card.index));
         selected_card = null;
         // Choosing a project card for an effect (such as sabotage).
-      }else if(human.getState() == HumanPlayer.CHOOSING_PROJECT_CARD && mouse_over_card.place >= 0 && mouse_over_card.index >=0){
+      }else if(human.getState() == HumanPlayer.CHOOSING_PROJECT_CARD && mouse_over_card.place >= 0 && mouse_over_card.index >=0 
+          && mouse_over_card.index < game.start_ups.get(mouse_over_card.place).project.size()){
         human.setProjectCard(mouse_over_card.place, mouse_over_card.index);
         // Choosing a project deck for an effect.
       }else if(human.getState() == HumanPlayer.CHOOSING_DECK && mouse_over_card.place >= 0  
