@@ -32,7 +32,11 @@ public class DrawPhase extends Event{
   public String print(Game game) {
     Player p = game.getPlayer(game.getTurn());
     int cards = p.getHand().size();
-    return p.getName() + " drew " + p.getHand().getCard(cards-2).name +" and " + p.getHand().getCard(cards-1).name +".";
+    if(game.game_over){
+      return p.getName() + " ended the game on their draw phase." ;
+    }else{
+      return p.getName() + " drew " + p.getHand().getCard(cards-2).name +" and " + p.getHand().getCard(cards-1).name +".";
+    }
   }
   
   public Event copy() {

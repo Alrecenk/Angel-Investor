@@ -47,7 +47,7 @@ public class Deck implements Iterable<Card>{
   public void shuffle(){
     shuffle(new Random());
   }
-   
+
 
   public void shuffle(Random rand){
     for(int k=0;k<cards.size();k++){
@@ -79,10 +79,52 @@ public class Deck implements Iterable<Card>{
     return cards.get(p);
   }
 
+  // Returns the index of the first card matching the given name.
+  // or -1 is that card is not in this deck.
+  public int getCard(String name){
+    for(int k=0; k < cards.size(); k++){
+      if(cards.get(k).name == name){
+        return k ;
+      }
+    }
+    return -1;
+  }
+
+  // Returns the number of the given card that is in this deck.
+  // If the deck contains unknown cards then this may return a non-whole number.
+  // Works efficiently if all unknown cards have the same possible_cards deck.
+  public double countCard(String name){
+    int count = 0 ;
+    Deck last_possible = null; // Last unknown card deck
+    int amount_of_unknowns = 0 ; // Amount of copies of that deck.
+    for(int k=0; k < cards.size(); k++){
+      Card c = cards.get(k);
+      if(c.name == name){
+        count++;
+      }else if(c instanceof UnknownCard){
+        UnknownCard u = (UnknownCard)c;
+        Deck possible = u.possible_cards;
+        if(possible == last_possible){
+          amount_of_unknowns++;
+        }else{
+          if(last_possible!=null){
+            count += last_possible.countCard(name) * amount_of_unknowns / (double)last_possible.size();
+          }
+          last_possible = possible;
+          amount_of_unknowns = 1;
+        }
+      }
+    }
+    if(last_possible!=null){
+      count += last_possible.countCard(name) * amount_of_unknowns / (double)last_possible.size();
+    }
+    return count;
+  }
+
   public Card removeCard(int p) {
     return cards.remove(p);
   }
-  
+
   // Removes the given card from this deck (exact reference match, not equivalent card).
   // returns whether found the card to remove it.
   public boolean removeCard(Card c){
@@ -115,7 +157,7 @@ public class Deck implements Iterable<Card>{
       return s ;
     }
   }
-  
+
   // Returns a copy of this deck where each card is replaced with an unknown card that's possible from these cards.
   // The possible cards will be a copy and shuffled so no order can be inferred.
   // The position should be the location of this Deck, so the cards can be marked for the call_back.
@@ -129,9 +171,10 @@ public class Deck implements Iterable<Card>{
     return unknown;
   }
 
-  
+
   public String toString(){
     return printRange(0,size());
   }
+
 
 }

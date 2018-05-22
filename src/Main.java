@@ -64,7 +64,7 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
 
   public void setUpGame(){
     human = new HumanPlayer();
-    player = new Player[]{human, new RandomPlayer()};
+    player = new Player[]{new RandomPlayer(1), new RandomPlayer(2)};
     Deck main_deck = new Deck();
     main_deck.addCopies(new ViralMarketing(), 13);
     main_deck.addCopies(new Capital(), 10);
@@ -93,7 +93,10 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
     main_deck.addCopies(new Infamy(), 1);
     main_deck.add(new Nonprofit());
     main_deck.add(new Underdog());
-    game = new Game(player, main_deck, (int)(Math.random()*9999999));
+    int seed = (int)(Math.random()*9999999);
+    //int seed = 969464;
+    System.out.println("Game seed:" + seed);
+    game = new Game(player, main_deck, seed);
     Thread t = new Thread(game);
     t.start();
   }

@@ -1,55 +1,64 @@
+import java.util.Random;
+
 
 public class RandomPlayer extends Player{
 
+  Random rand;
+  int seed ;
+  public RandomPlayer(int seed){
+    this.seed = seed;
+    rand = new Random(seed);
+  }
+  
   public int chooseFlip(Game game) {
-    return (int)(Math.random()*game.start_ups.size());
+    return rand.nextInt(game.start_ups.size());
   }
 
   public int selectDrawLocation(Game game) {
-    return Math.random() < .5 ? Player.CASH_RESERVE : Player.MAIN_DECK;
+    return rand.nextDouble() < .5 ? Player.CASH_RESERVE : Player.MAIN_DECK;
   }
 
   public Event makePlay(Game game) {
-    if(hand.size() > 0 && Math.random() < .8){
-      if(Math.random() < .5){
-        return new SpendCard((int)(Math.random()*hand.size()));
+    if(hand.size() > 0 && rand.nextDouble()  < .8){
+      if(rand.nextDouble()  < .5){
+        return new SpendCard((int)(rand.nextDouble() *hand.size()));
       }else{
-        return new InvestCard((int)(Math.random()*hand.size()), (int)(Math.random()*game.start_ups.size()));
+        return new InvestCard((int)(rand.nextDouble() *hand.size()), (int)(rand.nextDouble() *game.start_ups.size()));
       }
     }else{
-      return new CompleteProject((int)(Math.random()*game.start_ups.size()));
+      return new CompleteProject((int)(rand.nextDouble() *game.start_ups.size()));
     }
     
   }
 
   public int chooseProjectforEffect(Card c, Game game) {
-    return (int)(Math.random()*game.start_ups.size());
+    return (int)(rand.nextDouble() * game.start_ups.size());
   }
 
   public int[] chooseProjectCardforEffect(Card c, Game game) {
-    int project = (int)(Math.random()*game.start_ups.size());
-    if(game.start_ups.get(project).project.size() == 0){ // Try for a project with cards in it.
-      project = (int)(Math.random()*game.start_ups.size()); 
+    int project = (int)(rand.nextDouble() *game.start_ups.size());
+    while(game.start_ups.get(project).project.size() == 0){ // Try for a project with cards in it.
+      project = (int)(rand.nextDouble() *game.start_ups.size()); 
     }
-    int card = (int)(Math.random()*game.start_ups.get(project).project.size());
+    int card = (int)(rand.nextDouble() *game.start_ups.get(project).project.size());
     
     return new int[]{project, card};
   }
 
   public int chooseDeckforEffect(Card c, Game game) {
-    if(Math.random() < .25){
+    if(rand.nextDouble() < .25){
       return Player.MAIN_DECK;
     }else{
-      return (int)(Math.random()*game.start_ups.size());
+      return (int)(rand.nextDouble() *game.start_ups.size());
     }
   }
 
   public int choosePlayerforEffect(Card c, Game game) {
-    return (int)(Math.random()*game.numPlayers());
+    return (int)(rand.nextDouble() *game.numPlayers());
   }
 
   public int trashCard(Card c, int location, Game game) {
-    return Math.random()<.5 ? Player.TRASH : Player.KEEP_CARD;
+    return rand.nextDouble() <.5 ? Player.TRASH : Player.KEEP_CARD;
   }
 
   public int[] reorderOrDiscard(Deck c, int location, Game game) {
@@ -61,7 +70,7 @@ public class RandomPlayer extends Player{
   }
 
   public Player copy() {
-    RandomPlayer r = new RandomPlayer();
+    RandomPlayer r = new RandomPlayer(seed);
     r.copyGameStateFrom(this);
     return r;
   }
