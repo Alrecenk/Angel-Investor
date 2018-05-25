@@ -1,7 +1,7 @@
 
 public class Patent extends Card {
   
-  public static final String PATENT_NAME = "patent";
+  public static final String PATENT_NAME = "Patent";
   
   public Patent(){
     name = PATENT_NAME;
@@ -21,7 +21,7 @@ public class Patent extends Card {
    int selected_row = e.chooseProjectforEffect(winner, this, game);
    while(selected_row == row){ // Can't pick the row patent is in.
      selected_row = e.chooseProjectforEffect(winner, this, game);
-     System.out.println("in complete loop patent");
+     //System.out.println("in complete loop patent");
    }
    game.beginSpecialCompletion(selected_row, winner.getPlayerNumber(), false);
  }
@@ -40,7 +40,7 @@ public String completePrint(Player winner, int which_row, Game game, CompleteCar
   int completed_row = e.readChoice();
   while(completed_row == which_row){
     completed_row = e.readChoice();
-    System.out.println("in print loop patent");
+    //System.out.println("in print loop patent");
   }
   return winner.getName() + " completed Patent, completing row " + completed_row +" with them as the winner.";
 }

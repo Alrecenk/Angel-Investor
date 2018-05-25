@@ -81,7 +81,7 @@ public class Deck implements Iterable<Card>{
 
   // Returns the index of the first card matching the given name.
   // or -1 is that card is not in this deck.
-  public int getCard(String name){
+  public int findCard(String name){
     for(int k=0; k < cards.size(); k++){
       if(cards.get(k).name == name){
         return k ;

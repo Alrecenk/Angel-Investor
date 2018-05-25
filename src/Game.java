@@ -258,48 +258,7 @@ public class Game implements Runnable{
   }
 
   public int getProjectWinner(int which_start_up){
-    boolean nonprofit=false, underdog=false;
-    int money_count[] = new int[players.size()];
-    // Count the money and check for cards that change how to count the money.
-    Iterator<Card> project_iterator = start_ups.get(which_start_up).project.iterator();
-    while(project_iterator.hasNext()){
-      Card c = project_iterator.next();
-      if(c instanceof Money){
-        money_count[((Money)c).player]++;
-      }else if(c instanceof Nonprofit){
-        nonprofit = true;
-      }else if(c instanceof Underdog){
-        underdog = true;
-      }
-    }
-    int winner = NOONE;
-    if(nonprofit){
-      winner = NOONE;
-    }else if(underdog){
-      int min_money = 9999;
-      winner = NOONE;
-      for(int k=0;k<players.size();k++){
-        if(money_count[k] > 0 && money_count[k] < min_money){ // lowest nonzero money.
-          min_money = money_count[k];
-          winner = k;
-        }else if(money_count[k] == min_money){// If tie for min nowinner.
-          winner = NOONE;
-        }
-      }
-    }else{
-      int max_money = 0 ;
-      winner = NOONE;
-      for(int k=0;k<players.size();k++){
-        if(money_count[k] > max_money){
-          max_money = money_count[k];
-          winner = k;
-        }else if(money_count[k] == max_money){ // If tie for max no winner.
-          winner = NOONE;
-        }
-      }
-    }
-    return winner ;
-
+    return start_ups.get(which_start_up).getProjectWinner() ;
   }
 
   // Flip a card as part of the flip phase.

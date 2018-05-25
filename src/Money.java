@@ -8,7 +8,7 @@ public class Money extends Card{
     player = p ;
     name = Money.MONEY_NAMES[p];
   }
-
+  //TODO there may be a bug where spending lots of money sometimes doesn't take your money.
   public void spend(Player player, Game game, Event e) {
     Deck hand = player.getHand();
     int spent_money = 1 ;

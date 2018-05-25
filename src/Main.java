@@ -64,7 +64,7 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
 
   public void setUpGame(){
     human = new HumanPlayer();
-    player = new Player[]{new RandomPlayer(1), new RandomPlayer(2)};
+    player = new Player[]{human, new BasicPlayer(2), new BasicPlayer(3)};
     Deck main_deck = new Deck();
     main_deck.addCopies(new ViralMarketing(), 13);
     main_deck.addCopies(new Capital(), 10);
@@ -291,7 +291,7 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
           }else if(matchFirst(s,"Player " + k + " spent a Capital")){
             s = "Player " + k + " spent a capital and drew [redacted].";
           }else if(matchFirst(s,"Player " + k + " completed a Capital")){
-            s = "Player " + k + " complted a capital and drew [redacted].";
+            s = "Player " + k + " completed a capital and drew [redacted].";
           }
         }
         log_display.add(s);

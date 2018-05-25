@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.Random;
 
 
@@ -76,6 +77,51 @@ public class StartUp {
 
   public String toString(){
     return "Project: " + project.toString() + ", Discard:" + discard.toString() +", Deck:" +  deck.toString();
+  }
+  
+  public int getProjectWinner(){
+    boolean nonprofit=false, underdog=false;
+    int money_count[] = new int[Money.MONEY_NAMES.length];
+    // Count the money and check for cards that change how to count the money.
+    Iterator<Card> project_iterator = project.iterator();
+    while(project_iterator.hasNext()){
+      Card c = project_iterator.next();
+      if(c instanceof Money){
+        money_count[((Money)c).player]++;
+      }else if(c instanceof Nonprofit){
+        nonprofit = true;
+      }else if(c instanceof Underdog){
+        underdog = true;
+      }
+    }
+    int winner = Game.NOONE;
+    if(nonprofit){
+      winner = Game.NOONE;
+    }else if(underdog){
+      int min_money = 9999;
+      winner = Game.NOONE;
+      for(int k=0;k<Money.MONEY_NAMES.length;k++){
+        if(money_count[k] > 0 && money_count[k] < min_money){ // lowest nonzero money.
+          min_money = money_count[k];
+          winner = k;
+        }else if(money_count[k] == min_money){// If tie for min nowinner.
+          winner = Game.NOONE;
+        }
+      }
+    }else{
+      int max_money = 0 ;
+      winner = Game.NOONE;
+      for(int k=0;k<Money.MONEY_NAMES.length;k++){
+        if(money_count[k] > max_money){
+          max_money = money_count[k];
+          winner = k;
+        }else if(money_count[k] == max_money){ // If tie for max no winner.
+          winner = Game.NOONE;
+        }
+      }
+    }
+    return winner ;
+
   }
 
   // The probability that each player will win a project of "drawn" cards from this startup

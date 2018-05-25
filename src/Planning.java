@@ -63,6 +63,7 @@ public class Planning extends Card{
 
   
   public String print(Player p, Game game, Event e, boolean spent){
+    //TODO Fix bug: often prints itself instead of trashed card when used on main deck.
     int which_deck = e.readChoice();
     int[] picked = e.readChoiceArray();
     int discarded = e.readChoice();
