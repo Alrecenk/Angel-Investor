@@ -1,7 +1,7 @@
 
 public class SpendCard extends Event{
 
-  Card spent_card ; //Just used to save the card for printing in case it moves (Infamy).
+  Card spent_card = null; //Just used to save the card for printing in case it moves (Infamy).
   
   public SpendCard(int which_card){
     addChoice(which_card);
@@ -29,7 +29,9 @@ public class SpendCard extends Event{
   
   public Event copy() {
     resetReadPointer();
-    return new SpendCard(readChoice());
+    SpendCard sc = new SpendCard(readChoice());
+    sc.spent_card = spent_card;
+    return sc;
   }
 
 }

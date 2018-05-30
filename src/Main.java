@@ -45,6 +45,9 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
   CardDisplay selected_card = null;
   ArrayList<String> log_display = new ArrayList<String>();
   int max_log_lines = 50;
+  
+  DrawMetric draws = new DrawMetric();
+  FlipMetric flips = new FlipMetric();
 
   public void init()
   {
@@ -64,7 +67,8 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
 
   public void setUpGame(){
     human = new HumanPlayer();
-    player = new Player[]{human, new BasicPlayer(2), new BasicPlayer(3)};
+    //player = new Player[]{human, new BasicPlayer(1)};
+    player = new Player[]{new BasicPlayer(0), new BasicPlayer(1)};
     Deck main_deck = new Deck();
     main_deck.addCopies(new ViralMarketing(), 13);
     main_deck.addCopies(new Capital(), 10);
@@ -94,9 +98,11 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
     main_deck.add(new Nonprofit());
     main_deck.add(new Underdog());
     int seed = (int)(Math.random()*9999999);
-    //int seed = 969464;
+    //int seed = 2491508;
     System.out.println("Game seed:" + seed);
     game = new Game(player, main_deck, seed);
+    game.attachMetric(draws);
+    game.attachMetric(flips);
     Thread t = new Thread(game);
     t.start();
   }
@@ -344,10 +350,14 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
   {
     char t = e.getKeyChar() ;
 
-    if(t == 'p'){
+    if(t == 'p'){ // Print anonymized game state
       System.out.println(human.last_game_instance);
-    }else if(t == 'P'){
+    }else if(t == 'P'){ // Print raw game state
       System.out.println(game);
+    }else if(t == 'd'){
+      System.out.println(draws); // Print players draws (whole game)
+    }else if(t == 'f'){
+      System.out.println(flips); // print player flips (whole game)
     }
 
 
@@ -517,8 +527,8 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
   {
   }
 
-  public static void loadCardImages(){
-    card_image = new HashMap<String, LazyImage>();
+  public static HashMap<String, LazyImage> loadCardImages(){
+    HashMap<String, LazyImage> card_image = new HashMap<String, LazyImage>();
 
     card_image.put(BACK, new LazyImage(CARD_FOLDER + BACK_IMAGE));
     card_image.put(BLANK, new LazyImage(CARD_FOLDER + BLANK_IMAGE));
@@ -552,11 +562,11 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
     card_image.put(Infamy.INFAMY_NAME, new LazyImage(CARD_FOLDER + Infamy.INFAMY_NAME +".PNG"));
     card_image.put(Underdog.UNDERDOG_NAME, new LazyImage(CARD_FOLDER + Underdog.UNDERDOG_NAME +".PNG"));
     card_image.put(Nonprofit.NONPROFIT_NAME, new LazyImage(CARD_FOLDER + Nonprofit.NONPROFIT_NAME +".PNG"));
-
+    return card_image;
   }
   public static void main(String[] args)
   {
-    loadCardImages();
+    card_image = loadCardImages();
     Main window = new Main();
     window.init() ;
     window.addWindowListener(new WindowAdapter()

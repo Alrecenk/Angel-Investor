@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.Iterator;
+
 // An event that occurs because of an F trigger on a card.
 public class FlipCard extends Event{
 
@@ -34,4 +37,5 @@ public class FlipCard extends Event{
   public Event copy() {
     return new FlipCard(card.copy(), row);
   }
+  
 }

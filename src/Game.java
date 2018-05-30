@@ -65,6 +65,8 @@ public class Game implements Runnable{
 
   public boolean logging_enabled = true; // Whether to add text to the log and call print functions.
   public boolean enforce_hidden_information = true; // Whether to pass a sanitized copy of the game to choices instead of the raw.
+  
+  private ArrayList<Metric> metrics = new ArrayList<Metric>();
 
   public Game(Player[] all_players, Deck non_cash_cards, int random_seed){
     seed = random_seed;
@@ -140,6 +142,7 @@ public class Game implements Runnable{
   // References to cards are all duplicated and not merged so exact card reference matches may fail. TODO Make sure this is ok
   // Log and starting_main_deck are a shallow copy duplicated to reduce resources.
   // Logging and enforce_hidden_information are disabled by default to prevent accidental memory explosion.
+  // Attached metrics are not copied.
   public Game(Game source, int seed){
 
     main_deck = source.main_deck.copy();
@@ -321,6 +324,9 @@ public class Game implements Runnable{
           text_log.add(s);
         }
       }
+      for(int k=0;k<metrics.size();k++){
+        metrics.get(k).measure(current_event, this);
+      }
     }else{
       if(phase == FLIP){
         boolean all_flipped = true;
@@ -463,6 +469,10 @@ public class Game implements Runnable{
       s.deck = s.deck.getUnknown(k, p);
     }
     return sanitized_game;
+  }
+  
+  public void attachMetric(Metric m){
+    metrics.add(m);
   }
 
   public String toString(){

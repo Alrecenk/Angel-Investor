@@ -27,7 +27,7 @@ public class Funnel extends Card{
       to_row = e.chooseProjectforEffect(player, this, game);
 
       while(to_row == from_row){
-        System.err.println(player.getName() +" tried to funnel a money into the same project, which is technically illegal, requesting new choice...");
+        //System.err.println(player.getName() +" tried to funnel a money into the same project, which is technically illegal, requesting new choice...");
         to_row = e.chooseProjectforEffect(player, this, game);
       }
       Deck destination = game.start_ups.get(to_row).project;

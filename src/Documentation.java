@@ -15,7 +15,9 @@ public class Documentation extends Card{
 
  //Modifies the game state when this card is completed in a project. winner is the winner of that project
  public void complete(Player winner, int row, Game game, Event e){
-   game.flip_after_completion[row] += 3;
+   if(game.phase == Game.COMPLETE){
+     game.flip_after_completion[row] += 3;
+   }
  }
 
  //Modifies the game state if this card were trashed.

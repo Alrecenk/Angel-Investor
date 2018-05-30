@@ -3,6 +3,7 @@ public class Money extends Card{
 
   public int player = 0 ;
   public static final String[] MONEY_NAMES = new String[]{"Dollar", "Euro", "Yen", "Bitcoin"};
+  public static final String GENERAL_MONEY_NAME = "Money";
 
   public Money(int p){
     player = p ;

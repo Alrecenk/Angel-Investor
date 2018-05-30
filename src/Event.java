@@ -3,7 +3,7 @@
 // The shared class logs the choices made by players, and provides pass-through functions for player choices (to allow replaying from logs wit hthe same code).
 public abstract class Event {
 
-  private Choice selection = new Choice();
+  protected Choice selection = new Choice();
 
   // Shared static switch for all events tells them to run from logs instead of asking players for choices.
   public static boolean execute_from_log = false;
