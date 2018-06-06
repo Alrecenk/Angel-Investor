@@ -176,5 +176,37 @@ public class Deck implements Iterable<Card>{
     return printRange(0,size());
   }
 
+  
+  public static Deck getMainDeck(){
+    Deck main_deck = new Deck();
+    main_deck.addCopies(new ViralMarketing(), 13);
+    main_deck.addCopies(new Capital(), 10);
+    main_deck.addCopies(new Profit(), 10);
+    main_deck.addCopies(new Sabotage(), 8);
+    main_deck.addCopies(new Breakthrough(), 7);
+    main_deck.addCopies(new Pivot(), 5);
+    main_deck.addCopies(new Damages(), 4);
+    main_deck.addCopies(new EpicFail(), 4);
+    main_deck.addCopies(new Planning(), 4);
+    main_deck.addCopies(new Funnel(), 3);
+    main_deck.addCopies(new Delay(), 3);
+    main_deck.addCopies(new PressRelease(), 3);
+    main_deck.addCopies(new Scandal(), 3);
+    main_deck.addCopies(new PublicityStunt(), 3);
+    main_deck.addCopies(new Spinoff(), 3);
+    main_deck.addCopies(new Poach(), 3);
+    main_deck.addCopies(new Documentation(), 2);
+    main_deck.addCopies(new Lawyers(), 2);
+    main_deck.addCopies(new Taxes(), 2);
+    main_deck.addCopies(new Rush(), 1);
+    main_deck.addCopies(new OpenSource(), 1);
+    main_deck.addCopies(new Patent(), 1);
+    main_deck.addCopies(new Bust(), 1);
+    main_deck.addCopies(new Boom(), 1);
+    main_deck.addCopies(new Infamy(), 1);
+    main_deck.add(new Nonprofit());
+    main_deck.add(new Underdog());
+    return main_deck;
+  }
 
 }

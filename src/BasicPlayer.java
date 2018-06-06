@@ -1,10 +1,11 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
 
-public class BasicPlayer extends Player{
+public class BasicPlayer extends Player implements Comparable {
 
   Random rand;
   int seed ;
@@ -16,13 +17,89 @@ public class BasicPlayer extends Player{
   public double new_win_for_invest_multiplier ; // how good is it to invest money to turn a tie into a win
   public double new_tie_for_invest_multiplier ; // how good is it to invest money to create a tie from a loss
   public double general_investing_multiplier ; // General boost to long term investing of non-money
-
+  public double max_epic_fail_score ; // Maximum row score for an Epic Fail to be spent
+  public double max_bust_score ; // Maximum score for a bust to be used.
+  public double min_boom_score ; // Minimum score for a boom to be spent
+  public double min_spinoff_score ; // Minimum score to spend a spinoff
+  
+  
   public boolean logging_enabled = false;
+  public int wins = 0 ;
 
   public BasicPlayer(int seed){
     this.seed = seed;
     rand = new Random(seed);
     initializeBasicWeights();
+  }
+  
+  public void setToVector(double v[]){
+    int k = 8;
+    money_draw_chance = Math.max(0, Math.min(v[0],1));
+    general_investing_multiplier = v[1];
+    new_win_for_invest_multiplier = v[2];
+    new_tie_for_invest_multiplier = v[3];
+    max_epic_fail_score = v[4];
+    max_bust_score = v[5] ;
+    min_boom_score = v[6] ;
+    min_spinoff_score = v[7];
+    
+    
+    Iterator<String> i = card_flip_score.keySet().iterator();
+    while(i.hasNext()){
+      String key = i.next();
+      card_flip_score.put(key,v[k]);
+      k++;
+    }
+    
+    i = card_complete_score.keySet().iterator();
+    while(i.hasNext()){
+      String key = i.next();
+      card_complete_score.put(key,v[k]);
+      k++;
+    }
+    
+    i = card_startup_score.keySet().iterator();
+    while(i.hasNext()){
+      String key = i.next();
+      card_startup_score.put(key,v[k]);
+      k++;
+    }
+  }
+  
+  public double[] getVector(){
+    int k = 8;
+    double v[] = new double[k + card_flip_score.size() + card_complete_score.size() + card_startup_score.size()];
+    v[0] = money_draw_chance;
+    v[1] = general_investing_multiplier;
+    v[2] = new_win_for_invest_multiplier ;
+    v[3] = new_tie_for_invest_multiplier ;
+    v[4] = max_epic_fail_score ;
+    v[5] = max_bust_score  ;
+    v[6] = min_boom_score  ;
+    v[7] = min_spinoff_score ;
+    
+    
+    Iterator<String> i = card_flip_score.keySet().iterator();
+    while(i.hasNext()){
+      String key = i.next();
+      v[k] = card_flip_score.get(key);
+      k++;
+    }
+    
+    i = card_complete_score.keySet().iterator();
+    while(i.hasNext()){
+      String key = i.next();
+      v[k] = card_complete_score.get(key);
+      k++;
+    }
+    
+    i = card_startup_score.keySet().iterator();
+    while(i.hasNext()){
+      String key = i.next();
+      v[k] = card_startup_score.get(key);
+      k++;
+    }
+    return v;
   }
 
   public void initializeBasicWeights(){
@@ -30,6 +107,10 @@ public class BasicPlayer extends Player{
     general_investing_multiplier = 5;
     new_win_for_invest_multiplier = 1;
     new_tie_for_invest_multiplier = .5;
+    max_epic_fail_score = -10;
+    max_bust_score = -10;
+    min_boom_score = 10 ;
+    min_spinoff_score = 10;
     // Points
     card_flip_score.put(ViralMarketing.VIRAL_MARKETING_NAME, 20.0);
     card_startup_score.put(ViralMarketing.VIRAL_MARKETING_NAME, 10.0);
@@ -75,6 +156,73 @@ public class BasicPlayer extends Player{
     card_complete_score.put(Patent.PATENT_NAME, 8.0);
     card_startup_score.put(Patent.PATENT_NAME, 4.0);
 
+  }
+  
+  public void initializeRandomWeights(Random rand){
+    money_draw_chance = rand.nextDouble() ;
+    general_investing_multiplier = rand.nextDouble()*40-20;
+    new_win_for_invest_multiplier = rand.nextDouble()*10-5;
+    new_tie_for_invest_multiplier = rand.nextDouble()*10-5;
+    max_epic_fail_score = rand.nextDouble()*20-10;
+    max_bust_score = rand.nextDouble()*20-10;
+    min_boom_score = rand.nextDouble()*20-10 ;
+    // Points
+    card_flip_score.put(ViralMarketing.VIRAL_MARKETING_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(ViralMarketing.VIRAL_MARKETING_NAME, rand.nextDouble()*40-20);
+
+    card_complete_score.put(PressRelease.PRESS_RELEASE_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(PressRelease.PRESS_RELEASE_NAME, rand.nextDouble()*40-20);
+
+    card_complete_score.put(Infamy.INFAMY_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Infamy.INFAMY_NAME, rand.nextDouble()*40-20);
+
+    card_complete_score.put(PublicityStunt.PUBLICITY_STUNT_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(PublicityStunt.PUBLICITY_STUNT_NAME, rand.nextDouble()*40-20);
+
+    // Common cards
+    card_complete_score.put(Capital.CAPITAL_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Capital.CAPITAL_NAME, rand.nextDouble()*40-20);
+
+    card_complete_score.put(Profit.PROFIT_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Profit.PROFIT_NAME, rand.nextDouble()*40-20);
+
+    card_complete_score.put(Sabotage.SABOTAGE_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Sabotage.SABOTAGE_NAME, rand.nextDouble()*40-20);
+
+    card_complete_score.put(Pivot.PIVOT_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Pivot.PIVOT_NAME, rand.nextDouble()*40-20);
+
+    card_complete_score.put(Planning.PLANNING_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Planning.PLANNING_NAME, rand.nextDouble()*40-20);
+
+    card_flip_score.put(EpicFail.EPIC_FAIL_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(EpicFail.EPIC_FAIL_NAME, rand.nextDouble()*40-20);
+
+    // Other stuff
+    card_flip_score.put(Rush.RUSH_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Rush.RUSH_NAME, rand.nextDouble()*40-20);
+
+    card_startup_score.put(Documentation.DOCUMENTATION_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Breakthrough.BREAKTHROUGH_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Nonprofit.NONPROFIT_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Underdog.UNDERDOG_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Lawyers.LAWYERS_NAME, rand.nextDouble()*40-20);
+    
+    card_complete_score.put(Patent.PATENT_NAME, rand.nextDouble()*40-20);
+    card_startup_score.put(Patent.PATENT_NAME, rand.nextDouble()*40-20);
+
+  }
+  
+  public void initializeTrainedWeights(){
+    
+    
+    double v[] = new double[]{0.6688093051729413, 2.2747678808284872, 0.43750637690031624, 0.264411794714825, -3.5669829609223545, 5.272931333537395, 2.3671053974084284,
+        1.2427303336394244, 21.965105601469237, -3.0303030303030303, -0.8080808080808088, 24.242424242424242, -0.6060606060606064, 2.828282828282828, 22.82828282828283, 
+        0.898989898989899, 1.2929292929292928, 1.393939393939394, 0.04040404040404055, 5.030303030303031, 5.97979797979798, 1.1717171717171717, 0.3232323232323231, 0.8181818181818181,
+        0.404040404040404, -0.2222222222222222, 0.31313131313131315, 1.616161616161616, -20.606060606060606, 6.969696969696969, 2.4646464646464645, 2.7272727272727275, -0.04040404040404039, 
+        1.0000000000000002, -0.6262626262626263, -3.737373737373738, 0.10101010101010077};
+    
+    setToVector(v);
   }
 
   public int chooseFlip(Game game) {
@@ -170,19 +318,19 @@ public class BasicPlayer extends Player{
 
 
     //Bust and boom based on total complete score
-    if(hand.countCard(Bust.BUST_NAME) > 0 && total_project_value < 0){
+    if(hand.countCard(Bust.BUST_NAME) > 0 && total_project_value < max_bust_score){
       return new SpendCard(hand.findCard(Bust.BUST_NAME));
     }
-    if(hand.countCard(Boom.BOOM_NAME) > 0 && total_project_value > 0){
+    if(hand.countCard(Boom.BOOM_NAME) > 0 && total_project_value > min_boom_score){
       return new SpendCard(hand.findCard(Boom.BOOM_NAME));
     }
     // Spend Epic Fail if a negative row exists
-    if(hand.countCard(EpicFail.EPIC_FAIL_NAME) > 0 && worst_complete_score < 0){
+    if(hand.countCard(EpicFail.EPIC_FAIL_NAME) > 0 && worst_complete_score < max_epic_fail_score){
       return new SpendCard(hand.findCard(EpicFail.EPIC_FAIL_NAME));
     }
     
     // Spend Spinoff if a psotive row exists
-    if(hand.countCard(Spinoff.SPINOFF_NAME) > 0 && best_complete_score > 0){
+    if(hand.countCard(Spinoff.SPINOFF_NAME) > 0 && best_complete_score > min_spinoff_score){
       return new SpendCard(hand.findCard(Spinoff.SPINOFF_NAME));
     }
     
@@ -466,5 +614,186 @@ public class BasicPlayer extends Player{
     return r;
   }
 
+  
+  public int compareTo(Object other) {
+    return ((BasicPlayer)other).wins - wins;
+  }
+  
+  // Crosses two weight vectors to create a child by selecting each value from a random parent.
+  public static double[] cross(double a[], double b[], Random rand){
+    double c[] = new double[a.length];
+    for(int k=0;k<a.length;k++){
+      c[k] = rand.nextDouble() < .5 ? a[k] : b[k];
+    }
+    return c ;
+  }
+  
+  // Mutates a weight vector by adding -s to size to mutations weights.
+  public static double[] mutate(double a[], int mutations, double size, Random rand){
+    double c[] = new double[a.length];
+    for(int k=0;k<a.length;k++){
+      c[k] = a[k];
+    }
+    for(int j=0;j<mutations;j++){
+      int i = rand.nextInt(a.length);
+      c[i] += (rand.nextDouble()-.5)*2*size;
+    }
+    return c ;
+  }
+  
+  // Plays every AI in the array against every other AI, accumulates the wins on the BasicPlayer wins variable
+  public static void playAllMatches(BasicPlayer[] population, Random rand){
+    for(int k=1;k<population.length;k++){
+      for(int j=0;j<k;j++){
+        Game g = new Game(new Player[]{population[k], population[j]}, Deck.getMainDeck(), rand.nextInt());
+        g.run();
+        if(population[k].finalScore() > population[j].finalScore()){
+          population[k].wins++;
+        }else if(population[j].finalScore() > population[k].finalScore()){
+          population[j].wins++;
+        }
+      }
+    }
+  }
+  
+  public static int weightedRandomSelect(int weights[], Random rand){
+    int r = rand.nextInt(weights[weights.length-1]);
+    int min_k= 0, max_k = weights.length - 1;
+    while(max_k - min_k  > 1){
+      int mid_k = (min_k+max_k)/2;
+      if(weights[mid_k] <= r){
+        min_k = mid_k;
+      }else{
+        max_k = mid_k;
+      }
+    }
+    return min_k;
+  }
+    
+  public static void print(double[] v){
+    String s = "{" + v[0] ;
+    for(int k=1; k < v.length;k++){
+      s+=", " +v[k];
+    }
+    s+= "}";
+    System.out.println(s);
+  }
+  
+  public static void main(String args[]){
+    axisSearch();
+  }
+  
+  public static BasicPlayer[] rangeMutate(BasicPlayer bp, int index, int amount){
+    double v[] = bp.getVector();
+    BasicPlayer population[] = new BasicPlayer[amount];
+    for(int k=0;k<amount;k++){
+      population[k] = new BasicPlayer(k*index*amount);
+      double nv[] = new double[v.length];
+      for(int j=0;j<v.length;j++){
+        nv[j] = v[j];
+      }
+      nv[index] = -v[index] + (4*v[index]*k) / (amount-1);
+      population[k].setToVector(nv);
+    }
+    return population;
+  }
+    
+  public static void axisSearch(){
+    int generations = 100;
+    int population_size = 100;
+    BasicPlayer winner = new BasicPlayer(0);
+    int weights = winner.getVector().length;
+    Random rand = new Random();
+    for(int g = 0 ; g < generations; g++){
+      for(int i = 0 ;i < weights;i++){
+        BasicPlayer population[] = rangeMutate(winner, i, population_size);
+        //System.out.println("Generation " + g +" playing games...");
+        playAllMatches(population, rand);
+        Arrays.sort(population); // Sort by wins descending.
+        double v[] = population[0].getVector();
+        v[i] = (population[0].getVector()[i] + population[1].getVector()[i] + population[2].getVector()[i]+ population[3].getVector()[i])/4.0;
+        winner = new BasicPlayer(1);
+        winner.setToVector(v);
+        System.out.println("Generation " + g + " index " + i + " Best So Far:");
+        print(winner.getVector());
+        System.out.println ("Top 3:" + population[0].getVector()[i] +", " + population[1].getVector()[i] +", " + population[2].getVector()[i]+", " + population[3].getVector()[i]);
+      }
+    }
+  }
+  
+  
+  
+  public static void geneticAlgorithm(){
+    int population_size = 20;
+    int keep = 5;
+    int random = 15;
+    int generations = 1000;
+    double mutations = 0;
+    double mutation_size = 1;
+    
+    BasicPlayer[] population = new BasicPlayer[population_size];
+    Random rand = new Random();
+    population[0] = new BasicPlayer(0); // Add in default unmodified
+    population[1] = new BasicPlayer(1);
+    population[1].initializeTrainedWeights();// Add in last trained
+    for(int k=2;k<population_size;k++){
+      population[k] = new BasicPlayer(k);
+      double v[] = population[k].getVector();
+      v = mutate(v, (int)mutations, mutation_size, rand);
+      population[k].setToVector(v);
+    }
+    
+    boolean extra_logging = false;
+    
+    for(int g = 0 ; g < generations;g++){
+      System.out.println("Generation " + g +" playing games...");
+      playAllMatches(population, rand);
+      Arrays.sort(population); // Sort by wins descending.
+      int[] sum_wins = new int[population_size/2];
+      int total_wins = 0 ;
+      for(int k=0;k<sum_wins.length;k++){
+        total_wins += population[k].wins;
+        sum_wins[k] = total_wins;
+        if(extra_logging){
+          System.out.println("AI " + k + " wins: " + population[k].wins);
+        }
+      }
+      System.out.println("Best So Far:");
+      print(population[0].getVector());
+      
+      
+      BasicPlayer[] new_population = new BasicPlayer[population_size];
+      new_population[0] = new BasicPlayer(-g);
+      for(int k=1;k<keep;k++){
+        new_population[k] = population[k];
+        new_population[k].wins = 0 ;
+      }
+      for(int k=keep; k < keep + random;k++){
+        new_population[k] = new BasicPlayer(k*g);
+        new_population[k].initializeRandomWeights(rand);
+      }
+      
+      for(int k=keep+random;k<population_size;k++){
+        int p1 = weightedRandomSelect(sum_wins, rand);
+        int p2 = weightedRandomSelect(sum_wins, rand);
+        if(extra_logging){
+          System.out.println( "Breeding: " + p1 + " and " + p2);
+        }
+        double v[] = cross(population[p1].getVector(), population[p2].getVector(), rand);
+        v = mutate(v, (int)mutations, mutation_size, rand);
+        new_population[k] = new BasicPlayer(k*g);
+        new_population[k].setToVector(v);
+      }
+      population = new_population;
+      mutation_size *= .9;
+    }
+    
+  }
+    
+    
+  
+  
 
 }
+
+  

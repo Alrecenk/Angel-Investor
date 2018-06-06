@@ -25,6 +25,9 @@ public class Game implements Runnable{
   // Whether to re-shuffle any card drawn for starting start-ups that weren't valid.
   static final boolean RESHUFFLE_POOR_STARTS = false;
 
+  static final boolean SKIP_FIRST_PLAYER_DRAW_PHASE = true;
+  static final boolean LOSE_ONE_CARD_FOR_FIRST = false;
+
 
 
   Deque<Event> event_queue;
@@ -65,7 +68,7 @@ public class Game implements Runnable{
 
   public boolean logging_enabled = true; // Whether to add text to the log and call print functions.
   public boolean enforce_hidden_information = true; // Whether to pass a sanitized copy of the game to choices instead of the raw.
-  
+
   private ArrayList<Metric> metrics = new ArrayList<Metric>();
 
   public Game(Player[] all_players, Deck non_cash_cards, int random_seed){
@@ -81,17 +84,22 @@ public class Game implements Runnable{
     text_log = new ArrayList<String>();
 
     players = new ArrayList<Player>(all_players.length);
+    current_player = (int)(rand.nextDouble()*players.size());
     int starting_reserve = MONEY_USED[all_players.length] - STARTING_START_UPS;
     for(int k=0;k<all_players.length;k++){
       Player p = all_players[k];
       p.setPlayerNumber(k);
       p.reserve = starting_reserve;
+      p.fame = 0 ;
+      p.hand = new Deck();
       for(int j=0;j<STARTING_CARDS;j++){
-        Card c = main_deck.draw();
-        if(logging_enabled){
-          text_log.add(p.getName() +" drew " + c.name + ".");
+        if(!LOSE_ONE_CARD_FOR_FIRST || k != current_player || j != 0){
+          Card c = main_deck.draw();
+          if(logging_enabled){
+            text_log.add(p.getName() +" drew " + c.name + ".");
+          }
+          p.add(c);
         }
-        p.add(c);
       }
       for(int j=0;j<STARTING_MONEY;j++){
         p.add(p.drawMoney());
@@ -126,13 +134,13 @@ public class Game implements Runnable{
 
 
 
-    current_player = (int)(rand.nextDouble()*players.size());
+
     round = 1;
     phase = FLIP;
     flipped = new boolean[start_ups.size()];
     skip_next_completion = new boolean[players.size()];
 
-    skip_next_draw = true; // First player doesn't draw
+    skip_next_draw = SKIP_FIRST_PLAYER_DRAW_PHASE; 
     game_over = false;
     event_queue = new ArrayDeque<Event>();
 
@@ -470,7 +478,7 @@ public class Game implements Runnable{
     }
     return sanitized_game;
   }
-  
+
   public void attachMetric(Metric m){
     metrics.add(m);
   }

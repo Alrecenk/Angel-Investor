@@ -13,7 +13,6 @@ public abstract class Player {
   // special indices
   public static int DECK_INDEX = -1, DISCARD_INDEX = -2;
   
-  
   public void setPlayerNumber(int pn){
       player_number = pn;
   }

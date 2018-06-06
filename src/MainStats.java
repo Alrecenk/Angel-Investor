@@ -28,6 +28,9 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
   HashMap<String,int[]> card_draw_wins; // Key = "player position,card name,amount", value is {losses,wins}
   //Win rate relative to cards flipped on your turn
   HashMap<String,int[]> card_flip_wins; // Key = "player position,card name,amount", value is {losses,wins}
+  
+  int first_wins, first_losses ; // Wins and losses of the player who went first
+  int player_wins[], player_losses[] ;// Wins and losses of each player.
 
   String player0name = "";
   String player1name = "";
@@ -89,16 +92,12 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
   
   public Player[] setUpPlayers(){
     Player[] player = new Player[2];
-    player0name = "Basic Player";
+    player0name = "Default Basic Player";
     player[0] = new BasicPlayer(1);
-   
-    
-    
-    player1name = "Basic Player (Invest Weight Boost)";
+    player1name = "Trained Basic Player";
     BasicPlayer bp = new BasicPlayer(2);
-    bp.general_investing_multiplier = 10;
-    player[1] = bp;
-    
+    bp.initializeTrainedWeights();
+    player[1] = bp ;
     return player;
   }
 
@@ -106,6 +105,10 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
   public void calculateCardWinStats(int games){
     card_draw_wins = new HashMap<String, int[]>();
     card_flip_wins = new HashMap<String, int[]>();
+    first_wins = 0 ;
+    first_losses = 0;
+    player_wins = new int[2];
+    player_losses = new int[2];
     long total_run_time = 0 ;
     for(int q=0;q<games;q++){
       Player[] player = setUpPlayers();
@@ -113,7 +116,8 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
       System.out.println("Game " + q + " seed:" + seed);
       DrawMetric draws = new DrawMetric();
       FlipMetric flips = new FlipMetric();
-      Game game = new Game(player, getMainDeck(), seed);
+      Game game = new Game(player, Deck.getMainDeck(), seed);
+      int first_player = game.getTurn();
       game.enforce_hidden_information = false;
       game.attachMetric(draws);
       game.attachMetric(flips);
@@ -131,6 +135,15 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
       }
       if(winner != Game.NOONE){ // Ignore ties
         int loser = 1-winner;
+        player_wins[winner]++;
+        player_losses[loser]++;
+        if(winner == first_player){
+          first_wins++;
+        }else{
+          first_losses++;
+        }
+        
+        
         // Winner draws
         HashSet<String> had_card = new HashSet<String>();
 
@@ -240,41 +253,15 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
       }
     }
 
-
+    for(int k=0;k<player_wins.length;k++){
+      System.out.println("Player " + k + " Wins:" + player_wins[k] +"  Losses:" + player_losses[k]);
+    }
+    System.out.println("First player wins:" + first_wins + " First player losses:" + first_losses +" ->  " +  (first_wins*10000/(first_wins + first_losses)/100.0) +"%");
     System.out.println("Total runtime: " + (int)(total_run_time/1000) +"s  Average run time: " + ((int)(total_run_time / (double)games*100)/100.0) +"ms");
+    
   }
 
-  public Deck getMainDeck(){
-    Deck main_deck = new Deck();
-    main_deck.addCopies(new ViralMarketing(), 13);
-    main_deck.addCopies(new Capital(), 10);
-    main_deck.addCopies(new Profit(), 10);
-    main_deck.addCopies(new Sabotage(), 8);
-    main_deck.addCopies(new Breakthrough(), 7);
-    main_deck.addCopies(new Pivot(), 5);
-    main_deck.addCopies(new Damages(), 4);
-    main_deck.addCopies(new EpicFail(), 4);
-    main_deck.addCopies(new Planning(), 4);
-    main_deck.addCopies(new Funnel(), 3);
-    main_deck.addCopies(new Delay(), 3);
-    main_deck.addCopies(new PressRelease(), 3);
-    main_deck.addCopies(new Scandal(), 3);
-    main_deck.addCopies(new PublicityStunt(), 3);
-    main_deck.addCopies(new Spinoff(), 3);
-    main_deck.addCopies(new Poach(), 3);
-    main_deck.addCopies(new Documentation(), 2);
-    main_deck.addCopies(new Lawyers(), 2);
-    main_deck.addCopies(new Taxes(), 2);
-    main_deck.addCopies(new Rush(), 1);
-    main_deck.addCopies(new OpenSource(), 1);
-    main_deck.addCopies(new Patent(), 1);
-    main_deck.addCopies(new Bust(), 1);
-    main_deck.addCopies(new Boom(), 1);
-    main_deck.addCopies(new Infamy(), 1);
-    main_deck.add(new Nonprofit());
-    main_deck.add(new Underdog());
-    return main_deck;
-  }
+  
 
 
   public void paint(Graphics g)
