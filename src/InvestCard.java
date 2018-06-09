@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 public class InvestCard extends Event{
 
@@ -39,6 +41,24 @@ public class InvestCard extends Event{
     int which_card = readChoice(); // Not useful here but need to read it to get the next value.
     int which_row = readChoice();
     return new InvestCard(which_card, which_row);
+  }
+
+  public ArrayList<Choice> getPossibleChoices(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return null;
+  }
+
+  public int getUnknownCardLocation(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
+  }
+
+  public int getChoosingPlayer(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
   }
 
 }

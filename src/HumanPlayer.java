@@ -12,7 +12,7 @@ public class HumanPlayer extends Player{
   private int selected_deck;
   private int selected_trash;
   private int[] selected_reorder;
-  private Event selected_play;
+  private int[] selected_play;
   
   public Game last_game_instance;
 
@@ -65,7 +65,7 @@ public class HumanPlayer extends Player{
     return selected_draw;
   }
 
-  public Event makePlay(Game game) {
+  public int[] choosePlay(Game game) {
     last_game_instance = game;
     status = "Make play.";
     state = CHOOSING_PLAY;
@@ -165,7 +165,7 @@ public class HumanPlayer extends Player{
     state = WAITING;
   }
 
-  public void setPlay(Event play) {
+  public void setPlay(int[] play) {
     selected_play = play;
     state = WAITING;
 

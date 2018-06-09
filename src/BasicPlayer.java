@@ -233,7 +233,7 @@ public class BasicPlayer extends Player implements Comparable {
     return rand.nextDouble() < money_draw_chance ? Player.CASH_RESERVE : Player.MAIN_DECK;
   }
 
-  public Event makePlay(Game game) {
+  public int[] choosePlay(Game game) {
     if(logging_enabled){
       System.out.println("Calculating general statistics...");
     }
@@ -319,39 +319,39 @@ public class BasicPlayer extends Player implements Comparable {
 
     //Bust and boom based on total complete score
     if(hand.countCard(Bust.BUST_NAME) > 0 && total_project_value < max_bust_score){
-      return new SpendCard(hand.findCard(Bust.BUST_NAME));
+      return new int[]{hand.findCard(Bust.BUST_NAME), Player.TRASH};
     }
     if(hand.countCard(Boom.BOOM_NAME) > 0 && total_project_value > min_boom_score){
-      return new SpendCard(hand.findCard(Boom.BOOM_NAME));
+      return new int[]{hand.findCard(Boom.BOOM_NAME), Player.TRASH};
     }
     // Spend Epic Fail if a negative row exists
     if(hand.countCard(EpicFail.EPIC_FAIL_NAME) > 0 && worst_complete_score < max_epic_fail_score){
-      return new SpendCard(hand.findCard(EpicFail.EPIC_FAIL_NAME));
+      return new int[]{hand.findCard(EpicFail.EPIC_FAIL_NAME), Player.TRASH};
     }
     
     // Spend Spinoff if a psotive row exists
     if(hand.countCard(Spinoff.SPINOFF_NAME) > 0 && best_complete_score > min_spinoff_score){
-      return new SpendCard(hand.findCard(Spinoff.SPINOFF_NAME));
+      return new int[]{hand.findCard(Spinoff.SPINOFF_NAME), Player.TRASH};
     }
     
     // Spend damages if there's money to get
     if(hand.countCard(Damages.DAMAGES_NAME) > 0 && game.trash_pile.countCard(Money.MONEY_NAMES[player_number]) > 0){
-      return new SpendCard(hand.findCard(Damages.DAMAGES_NAME));
+      return new int[]{hand.findCard(Damages.DAMAGES_NAME), Player.TRASH};
     }
     
     // Delay if a negative row (there's probably opposing money)
     if(hand.countCard(Delay.DELAY_NAME) > 0 && worst_complete_score < 0){
-      return new SpendCard(hand.findCard(Delay.DELAY_NAME));
+      return new int[]{hand.findCard(Delay.DELAY_NAME), Player.TRASH};
     }
     
     // Spend Scandal whenever you get it
     if(hand.countCard(Scandal.SCANDAL_NAME) > 0){
-      return new SpendCard(hand.findCard(Scandal.SCANDAL_NAME));
+      return new int[]{hand.findCard(Scandal.SCANDAL_NAME), Player.TRASH};
     }
     
     // Spend Poach whenever you get it
     if(hand.countCard(Poach.POACH_NAME) > 0){
-      return new SpendCard(hand.findCard(Poach.POACH_NAME));
+      return new int[]{hand.findCard(Poach.POACH_NAME), Player.TRASH};
     }
     
     // Spend Taxes if you're winning by two in visible fame
@@ -364,7 +364,7 @@ public class BasicPlayer extends Player implements Comparable {
         }
       }
       if(my_fame - max_opponent_fame >= 2){
-        return new SpendCard(hand.findCard(Taxes.TAXES_NAME));
+        return new int[]{hand.findCard(Taxes.TAXES_NAME), Player.TRASH};
       }
     }
     
@@ -406,7 +406,7 @@ public class BasicPlayer extends Player implements Comparable {
         }
       }
       if(best_invest >= 0){
-        return new InvestCard(hand.findCard(Money.MONEY_NAMES[player_number]), best_invest);
+        return new int[]{hand.findCard(Money.MONEY_NAMES[player_number]), best_invest};
       }
     }
 
@@ -459,7 +459,7 @@ public class BasicPlayer extends Player implements Comparable {
       }
     }
     if(best_invest_card >= 0){
-      return new InvestCard(best_invest_card, best_invest_location);
+      return new int[]{best_invest_card, best_invest_location};
     }
 
     if(logging_enabled){
@@ -468,7 +468,7 @@ public class BasicPlayer extends Player implements Comparable {
 
     
     // Complete your best project if nothing else good to do.
-    return new CompleteProject(best_complete_row);   
+    return new int[]{Player.CHOICE, best_complete_row};   
 
   }
 

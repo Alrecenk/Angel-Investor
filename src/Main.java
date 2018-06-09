@@ -68,7 +68,7 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
   public void setUpGame(){
     human = new HumanPlayer();
     //player = new Player[]{human, new BasicPlayer(1)};
-    player = new Player[]{new BasicPlayer(0), new BasicPlayer(1)};
+    player = new Player[]{human, new BasicPlayer(1)};
     Deck main_deck = Deck.getMainDeck();
     int seed = (int)(Math.random()*9999999);
     //int seed = 2491508;
@@ -387,16 +387,16 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
         // Choosing completion of project
       }else if(human.getState() == HumanPlayer.CHOOSING_PLAY && selected_card == null &&
           mouse_over_card.place >= 0){
-        human.setPlay(new CompleteProject(mouse_over_card.place));
+        human.setPlay(new int[]{Player.CHOICE, mouse_over_card.place});
         // Choosing invest card
       }else if(human.getState() == HumanPlayer.CHOOSING_PLAY && selected_card!=null 
           && selected_card.place == Player.HAND && mouse_over_card.place >= 0 && mouse_over_card.index == game.start_ups.get(mouse_over_card.place).project.size()){
-        human.setPlay(new InvestCard(selected_card.index,  mouse_over_card.place));
+        human.setPlay(new int[]{selected_card.index,  mouse_over_card.place});
         selected_card = null;
         //Choosing to spend card.
       }else if(human.getState() == HumanPlayer.CHOOSING_PLAY && selected_card !=null 
           && selected_card.place == Player.HAND && (mouse_over_card.place == Player.MAIN_DECK || mouse_over_card.place == Player.TRASH)){
-        human.setPlay(new SpendCard(selected_card.index));
+        human.setPlay(new int[]{selected_card.index, Player.TRASH});
         selected_card = null;
         // Choosing a project card for an effect (such as sabotage).
       }else if(human.getState() == HumanPlayer.CHOOSING_PROJECT_CARD && mouse_over_card.place >= 0 && mouse_over_card.index >=0 

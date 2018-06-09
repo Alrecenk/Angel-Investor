@@ -147,7 +147,7 @@ public class Game implements Runnable{
   }
 
   // Creates a non-shallow duplicate of this game with some quirks.
-  // References to cards are all duplicated and not merged so exact card reference matches may fail. TODO Make sure this is ok
+  // References to cards are all duplicated and not merged so exact card reference matches may fail.
   // Log and starting_main_deck are a shallow copy duplicated to reduce resources.
   // Logging and enforce_hidden_information are disabled by default to prevent accidental memory explosion.
   // Attached metrics are not copied.
@@ -358,15 +358,7 @@ public class Game implements Runnable{
         }
         phase = PLAY;
       }else if(phase == PLAY){
-        Player p = players.get(current_player);
-        if(enforce_hidden_information){
-          Player player_backup = p.copy();
-          Game sanitized_game = getHiddenInfoCopy(p);
-          queueEvent(p.makePlay(sanitized_game));
-          p.copyGameStateFrom(player_backup); // Roll back any modifications the player made to their core game data but maintain consistent reference
-        }else{
-          queueEvent(p.makePlay(this));
-        }
+        queueEvent(new PlayPhase(enforce_hidden_information));
         // Switch to completion phase happens when a completion play is done and it calls beginCompletionPhase.
       }else if(phase == COMPLETE){
         if(start_ups.get(completing_project.peek()).project.size() > 0 && !skipping_completion){
@@ -467,14 +459,14 @@ public class Game implements Runnable{
 
     for(int k=0;k<sanitized_game.players.size();k++){
       if(k != p.getPlayerNumber()){// Change all other players to sanitized versions that hide hands and AI.
-        sanitized_game.players.set(k, new UnknownPlayer(sanitized_game.getPlayer(k), all_unknown_cards, p));
+        sanitized_game.players.set(k, new UnknownPlayer(sanitized_game.getPlayer(k), all_unknown_cards));
       }
     }
     // Sanitize unknown decks on the board.
-    sanitized_game.main_deck = sanitized_game.main_deck.getUnknown(Player.MAIN_DECK, sanitized_game.getPlayer(p.getPlayerNumber()));
+    sanitized_game.main_deck = sanitized_game.main_deck.getUnknown(Player.MAIN_DECK);
     for(int k=0;k<sanitized_game.start_ups.size();k++){
       StartUp s = sanitized_game.start_ups.get(k);
-      s.deck = s.deck.getUnknown(k, p);
+      s.deck = s.deck.getUnknown(k);
     }
     return sanitized_game;
   }

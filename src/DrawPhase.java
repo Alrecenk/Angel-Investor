@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 public class DrawPhase extends Event{
 
@@ -49,6 +51,24 @@ public class DrawPhase extends Event{
   
   public Event copy() {
     return new DrawPhase();
+  }
+
+  public ArrayList<Choice> getPossibleChoices(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return null;
+  }
+
+  public int getUnknownCardLocation(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
+  }
+
+  public int getChoosingPlayer(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
   }
 
 }

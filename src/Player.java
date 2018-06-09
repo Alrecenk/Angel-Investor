@@ -65,8 +65,11 @@ public abstract class Player {
   // Select second draw. Should return either MAIN_DECK or CASH_RESERVE
   public abstract int selectDrawLocation(Game game);
   
-  // Returns a play event to (probably) be executed immediately. Should be SpendCard, InvestCard, or CompleteProject. 
-  public abstract Event makePlay(Game game);
+  
+  // Returns a play {card, to location} to (probably) be executed immediately. 
+  // card < 0 means complete a project, otherwise it's hand location of card to be played.
+  // Location is project to invest in, or the card will be spent if it is TRASH.
+  public abstract int[] choosePlay(Game game);
   
   // Returns the index of a project to select for a given card's effect that targets a project(such as Epic Fail or Patent).
   public abstract int chooseProjectforEffect(Card c, Game game);

@@ -11,18 +11,15 @@ public class UnknownCard extends Card{
   
   public int place, index;
   public Deck possible_cards;
-  Player call_back;
   
   
-  public UnknownCard(Deck possible_cards, int place, int index, Player call_back){
+  public UnknownCard(Deck possible_cards, int place, int index){
     this.possible_cards = possible_cards;
     this.place = place;
     this.index = index;
-    this.call_back = call_back;
     this.name = UNKNOWN_CARD_NAME;
   }
   
-//TODO implement callback
   public boolean canBeStartingCard() {
     return false;
   }
@@ -32,7 +29,7 @@ public class UnknownCard extends Card{
   }
 
   public Card copy() {
-    return new UnknownCard(possible_cards, place, index, call_back);
+    return new UnknownCard(possible_cards, place, index);
   }
 
 }

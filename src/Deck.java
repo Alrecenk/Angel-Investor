@@ -161,12 +161,12 @@ public class Deck implements Iterable<Card>{
   // Returns a copy of this deck where each card is replaced with an unknown card that's possible from these cards.
   // The possible cards will be a copy and shuffled so no order can be inferred.
   // The position should be the location of this Deck, so the cards can be marked for the call_back.
-  public Deck getUnknown(int position, Player call_back){
+  public Deck getUnknown(int position){
     Deck possible = copy();
     possible.shuffle();
     Deck unknown = new Deck();
     for(int k=0;k<possible.size();k++){
-      unknown.add(new UnknownCard(possible,position,k,call_back));
+      unknown.add(new UnknownCard(possible,position,k));
     }
     return unknown;
   }

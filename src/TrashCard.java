@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 public class TrashCard extends Event{
 
@@ -21,5 +23,26 @@ public class TrashCard extends Event{
 
   public Event copy() {
     return new TrashCard(card.copy(),trasher);
+  }
+
+
+  public ArrayList<Choice> getPossibleChoices(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return null;
+  }
+
+
+  public int getUnknownCardLocation(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
+  }
+
+
+  public int getChoosingPlayer(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
   }
 }

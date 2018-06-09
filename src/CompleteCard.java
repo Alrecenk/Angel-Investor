@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 public class CompleteCard extends Event{
 
@@ -56,6 +58,24 @@ public class CompleteCard extends Event{
     CompleteCard cc = new CompleteCard(which_row, winner, spinoff);
     cc.completed_card = completed_card;
     return cc;
+  }
+
+  public ArrayList<Choice> getPossibleChoices(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return null;
+  }
+
+  public int getUnknownCardLocation(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
+  }
+
+  public int getChoosingPlayer(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
   }
 
 }

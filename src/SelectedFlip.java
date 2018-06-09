@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 // An event that occurs when a player is deciding which start-up to flip next.
 public class SelectedFlip extends Event{
   
@@ -27,6 +29,27 @@ public class SelectedFlip extends Event{
 
   public Event copy() {
     return new SelectedFlip();
+  }
+
+
+  public ArrayList<Choice> getPossibleChoices(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return null;
+  }
+
+
+  public int getUnknownCardLocation(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
+  }
+
+
+  public int getChoosingPlayer(Game game) {
+    // TODO Auto-generated method stub
+    System.err.println("Unimplemented choice enumeration.");
+    return 0;
   }
 
 }

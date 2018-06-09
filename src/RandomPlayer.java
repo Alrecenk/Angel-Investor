@@ -18,15 +18,15 @@ public class RandomPlayer extends Player{
     return rand.nextDouble() < .5 ? Player.CASH_RESERVE : Player.MAIN_DECK;
   }
 
-  public Event makePlay(Game game) {
+  public int[] choosePlay(Game game) {
     if(hand.size() > 0 && rand.nextDouble()  < .8){
       if(rand.nextDouble()  < .5){
-        return new SpendCard((int)(rand.nextDouble() *hand.size()));
+        return new int[]{(int)(rand.nextDouble() *hand.size()), Player.TRASH};
       }else{
-        return new InvestCard((int)(rand.nextDouble() *hand.size()), (int)(rand.nextDouble() *game.start_ups.size()));
+        return new int[]{(int)(rand.nextDouble() *hand.size()), (int)(rand.nextDouble() *game.start_ups.size())};
       }
     }else{
-      return new CompleteProject((int)(rand.nextDouble() *game.start_ups.size()));
+      return new int[]{Player.CHOICE, (int)(rand.nextDouble() *game.start_ups.size())};
     }
     
   }

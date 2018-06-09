@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 // An event is any action that can happen in the game.
 // The actual actions will be overrridden by extending classes.
 // The shared class logs the choices made by players, and provides pass-through functions for player choices (to allow replaying from logs wit hthe same code).
@@ -155,6 +157,25 @@ public abstract class Event {
       }
     }
   }
+  
+  public int[] choosePlay(Player p, Game game){
+    if(execute_from_log){
+      return selection.readChoiceArray();
+    }else{
+      if(game.enforce_hidden_information){
+        Player player_backup = p.copy();
+        Game sanitized_game = game.getHiddenInfoCopy(p); 
+        int[] choice = p.choosePlay(sanitized_game);
+        p.copyGameStateFrom(player_backup); // Roll back any modifications the player made to their core game data but maintain consistent reference
+        selection.addChoiceArray(choice);
+        return choice ;
+      }else{
+        int[] choice = p.choosePlay(game);
+        selection.addChoiceArray(choice);
+        return choice ;
+      }
+    }
+  }
 
   // Returns the indexes into the given cards for the ordering from bottom to top of cards that are being put back in Planning. Cards left out will be discarded.
   public int[] reorderOrDiscard(Player p, Deck c, int location, Game game){
@@ -169,9 +190,9 @@ public abstract class Event {
         selection.addChoiceArray(choice);
         return choice ;
       }else{
-      int[] choice = p.reorderOrDiscard(c, location, game);
-      selection.addChoiceArray(choice);
-      return choice ;
+        int[] choice = p.reorderOrDiscard(c, location, game);
+        selection.addChoiceArray(choice);
+        return choice ;
       }
     }
   }
@@ -202,5 +223,21 @@ public abstract class Event {
 
   // Copies an event for entire game duplication.
   public abstract Event copy();
+
+
+  // Returns a list of all possible choices that could result on this event.
+  // Should be called while the event is on the head of the event queue about to be executed.
+  //Used for players that rely on the game engine for predicting future states.
+  public abstract ArrayList<Choice> getPossibleChoices(Game game);
+
+  // Returns where this Event will access an UnknownCard or Player.NOWHERE if it won't.
+  //Should be called while the event is on the head of the event queue about to be executed.
+  //Used for players that rely on the game engine for predicting future states.
+  public abstract int getUnknownCardLocation(Game game);
+
+  
+  // Returns the player number of the player making the choice available in the getPossibleChoices() set.
+  // Will only be called after getPossibleChoices if it returns non-null
+  public abstract int getChoosingPlayer(Game game);
 
 }
