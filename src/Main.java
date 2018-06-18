@@ -59,21 +59,28 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
     Timer clock = new Timer(50, this); 
     clock.start();
 
-    setUpGame();
+    setUpGame(false);
 
   }
 
 
 
-  public void setUpGame(){
+  public void setUpGame(boolean competitive){
     human = new HumanPlayer();
-    //player = new Player[]{human, new BasicPlayer(1)};
-    player = new Player[]{human, new BasicPlayer(1)};
-    Deck main_deck = Deck.getMainDeck();
+    player = new Player[]{human, new BasicPlayer(13)};
+    //player = new Player[]{new RandomPlayer(0), new BasicPlayer(1)};
+    Deck main_deck = null;
+    Deck[] player_decks = null;
+    if(competitive){
+      main_deck = Deck.getCompetitiveMainDeck(2);
+      player_decks = new Deck[]{Deck.getCompetitivePlayerDeck(), Deck.getCompetitivePlayerDeck()};
+    }else{
+      main_deck = Deck.getMainDeck();
+    }
     int seed = (int)(Math.random()*9999999);
     //int seed = 2491508;
     System.out.println("Game seed:" + seed);
-    game = new Game(player, main_deck, seed);
+    game = new Game(player, main_deck, player_decks, seed);
     game.attachMetric(draws);
     game.attachMetric(flips);
     Thread t = new Thread(game);

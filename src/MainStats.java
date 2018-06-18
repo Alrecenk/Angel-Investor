@@ -93,11 +93,11 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
   public Player[] setUpPlayers(){
     Player[] player = new Player[2];
     player0name = "Default Basic Player";
-    player[0] = new BasicPlayer(1);
-    player1name = "Trained Basic Player";
-    BasicPlayer bp = new BasicPlayer(2);
-    bp.initializeTrainedWeights();
-    player[1] = bp ;
+    player[0] = new BasicPlayer((int)(Math.random()*Integer.MAX_VALUE));
+    //((BasicPlayer)player[0]).only_spend_cards = true;
+    player1name = "Also Basic Player";
+    player[1] = new BasicPlayer((int)(Math.random()*Integer.MAX_VALUE));
+    //((BasicPlayer)player[1]).only_spend_cards = true;
     return player;
   }
 
@@ -116,7 +116,9 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
       System.out.println("Game " + q + " seed:" + seed);
       DrawMetric draws = new DrawMetric();
       FlipMetric flips = new FlipMetric();
-      Game game = new Game(player, Deck.getMainDeck(), seed);
+      Deck main_deck = Deck.getCompetitiveMainDeck(2);
+      Deck[] player_decks = new Deck[]{Deck.getCompetitivePlayerDeck(), Deck.getCompetitivePlayerDeck()};
+      Game game = new Game(player, main_deck, player_decks, seed);
       int first_player = game.getTurn();
       game.enforce_hidden_information = false;
       game.attachMetric(draws);
@@ -227,7 +229,7 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
         // Loser Flips
         lose_map = flips.flips.get(loser);
         li = lose_map.keySet().iterator();
-        had_card = new HashSet<String>(); // Referesh for loser
+        had_card = new HashSet<String>(); // Refresh for loser
         while(li.hasNext()){
           String card = li.next();
           had_card.add(card);
@@ -256,7 +258,7 @@ implements ActionListener,MouseListener, KeyListener, MouseMotionListener
     for(int k=0;k<player_wins.length;k++){
       System.out.println("Player " + k + " Wins:" + player_wins[k] +"  Losses:" + player_losses[k]);
     }
-    System.out.println("First player wins:" + first_wins + " First player losses:" + first_losses +" ->  " +  (first_wins*10000/(first_wins + first_losses)/100.0) +"%");
+    System.out.println("First player wins:" + first_wins + " First player losses:" + first_losses +" ->  " +  (first_wins*10000l/(first_wins + first_losses)/100.0) +"%");
     System.out.println("Total runtime: " + (int)(total_run_time/1000) +"s  Average run time: " + ((int)(total_run_time / (double)games*100)/100.0) +"ms");
     
   }

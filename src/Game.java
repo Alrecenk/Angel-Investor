@@ -25,8 +25,8 @@ public class Game implements Runnable{
   // Whether to re-shuffle any card drawn for starting start-ups that weren't valid.
   static final boolean RESHUFFLE_POOR_STARTS = false;
 
-  static final boolean SKIP_FIRST_PLAYER_DRAW_PHASE = true;
-  static final boolean LOSE_ONE_CARD_FOR_FIRST = false;
+  public boolean SKIP_FIRST_PLAYER_DRAW_PHASE = false;
+  public boolean LOSE_ONE_CARD_FOR_FIRST = true;
 
 
 
@@ -35,6 +35,7 @@ public class Game implements Runnable{
   Deck trash_pile;
   ArrayList<StartUp> start_ups;
   ArrayList<Player> players;
+  ArrayList<Deck> player_decks = null;
   Random rand; // Pseudo-random number generator.
 
   int round;
@@ -64,6 +65,7 @@ public class Game implements Runnable{
   ArrayList<String> text_log;
   int seed ;
   Deck starting_main_deck ;
+  Deck[] starting_player_decks;
 
 
   public boolean logging_enabled = true; // Whether to add text to the log and call print functions.
@@ -71,12 +73,20 @@ public class Game implements Runnable{
 
   private ArrayList<Metric> metrics = new ArrayList<Metric>();
 
-  public Game(Player[] all_players, Deck non_cash_cards, int random_seed){
+  public Game(Player[] all_players, Deck shared_deck, Deck[] individual_decks, int random_seed){
     seed = random_seed;
     rand = new Random(seed);
-    starting_main_deck = non_cash_cards.copy();
+    starting_main_deck = shared_deck.copy();
+    starting_player_decks = individual_decks;
+    if(individual_decks != null){
+      player_decks = new ArrayList<Deck>();
+      for(int k=0;k<individual_decks.length;k++){
+        player_decks.add(individual_decks[k].copy());
+        player_decks.get(k).shuffle(rand);
+      }
+    }
 
-    main_deck = non_cash_cards;
+    main_deck = shared_deck;
     main_deck.shuffle(rand);
 
 
@@ -84,7 +94,7 @@ public class Game implements Runnable{
     text_log = new ArrayList<String>();
 
     players = new ArrayList<Player>(all_players.length);
-    current_player = (int)(rand.nextDouble()*players.size());
+    current_player = (int)(rand.nextDouble()*all_players.length);
     int starting_reserve = MONEY_USED[all_players.length] - STARTING_START_UPS;
     for(int k=0;k<all_players.length;k++){
       Player p = all_players[k];
@@ -92,9 +102,10 @@ public class Game implements Runnable{
       p.reserve = starting_reserve;
       p.fame = 0 ;
       p.hand = new Deck();
+
       for(int j=0;j<STARTING_CARDS;j++){
         if(!LOSE_ONE_CARD_FOR_FIRST || k != current_player || j != 0){
-          Card c = main_deck.draw();
+          Card c = drawCard(p);
           if(logging_enabled){
             text_log.add(p.getName() +" drew " + c.name + ".");
           }
@@ -153,6 +164,14 @@ public class Game implements Runnable{
   // Attached metrics are not copied.
   public Game(Game source, int seed){
 
+    starting_player_decks = source.starting_player_decks;
+    if(source.player_decks != null){
+      player_decks = new ArrayList<Deck>();
+      for(int k=0;k<source.player_decks.size();k++){
+        player_decks.add(source.player_decks.get(k).copy());
+      }
+    }
+    
     main_deck = source.main_deck.copy();
     trash_pile = source.trash_pile.copy();
     start_ups = new ArrayList<StartUp>();
@@ -291,13 +310,18 @@ public class Game implements Runnable{
   }
 
   //Draws a card from the main deck or returns null if there is none.
-  public Card drawCard(){
+  public Card drawCard(Player p){
+    if(player_decks != null && p.getPlayerNumber() < player_decks.size() && player_decks.get(p.getPlayerNumber()).size() > 0){
+      return player_decks.get(p.getPlayerNumber()).draw();
+    }
     if(main_deck.size() > 0){
       return main_deck.draw();
     }else{
       return null;
     }
   }
+  
+  
 
   // returns a given player object.
   public Player getPlayer(int player){

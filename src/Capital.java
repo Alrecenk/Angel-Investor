@@ -8,7 +8,7 @@ public class Capital extends Card{
   }
 
   public void spend(Player player, Game game, Event e) {
-    Card c = game.drawCard();
+    Card c = game.drawCard(player);
     if(c == null){
       game.endGame();
     } else {
@@ -18,7 +18,7 @@ public class Capital extends Card{
 
 
   public void complete(Player winner, int row, Game game, Event e) {
-    Card c = game.drawCard();
+    Card c = game.drawCard(winner);
     if(c == null){
       game.endGame();
     } else {

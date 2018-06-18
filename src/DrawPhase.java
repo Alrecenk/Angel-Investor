@@ -8,7 +8,7 @@ public class DrawPhase extends Event{
   public void execute(Game game) {
     resetReadPointer(); // Necessary when iterating over logs.
     Player p = game.getPlayer(game.getTurn());
-    Card c1 = game.drawCard(); // First card always come from main deck.
+    Card c1 = game.drawCard(p); // First card always come from main deck.
     int drawn = 0 ;
     if(c1 == null){
       game.endGame();
@@ -21,7 +21,7 @@ public class DrawPhase extends Event{
       if(draw_select == Player.CASH_RESERVE){
         c2 = p.drawMoney();
       }else if(draw_select == Player.MAIN_DECK){
-        c2 = game.drawCard();
+        c2 = game.drawCard(p);
       }else{
         System.err.println("Player selected to draw from an invalid location.");
       }

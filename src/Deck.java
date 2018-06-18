@@ -29,7 +29,11 @@ public class Deck implements Iterable<Card>{
 
   //Draws a card from the top of this deck.
   public Card draw(){
-    return cards.remove(cards.size()-1); // Pop
+    if(cards.size() == 0){
+      return null;
+    }else{
+      return cards.remove(cards.size()-1); // Pop
+    }
   }
 
   // Draws a card form the bottom of the deck.
@@ -204,9 +208,57 @@ public class Deck implements Iterable<Card>{
     main_deck.addCopies(new Bust(), 1);
     main_deck.addCopies(new Boom(), 1);
     main_deck.addCopies(new Infamy(), 1);
-    main_deck.add(new Nonprofit());
-    main_deck.add(new Underdog());
+    main_deck.addCopies(new Nonprofit(), 1);
+    main_deck.addCopies(new Underdog(), 1);
     return main_deck;
+  }
+  
+  public static Deck getCompetitiveMainDeck(int players){
+    Deck main_deck = new Deck();
+    main_deck.addCopies(new ViralMarketing(), 13 - 3*players);
+    main_deck.addCopies(new Capital(), 10 - 2*players);
+    main_deck.addCopies(new Profit(), 10 - 2*players);
+    main_deck.addCopies(new Sabotage(), 8 - 2*players);
+    main_deck.addCopies(new Breakthrough(), 7 - players);
+    main_deck.addCopies(new Pivot(), 5 - players);
+    main_deck.addCopies(new Damages(), 4 - players);
+    main_deck.addCopies(new EpicFail(), 4 - players);
+    main_deck.addCopies(new Planning(), 4 - players);
+    main_deck.addCopies(new Funnel(), 3);
+    main_deck.addCopies(new Delay(), 3);
+    main_deck.addCopies(new PressRelease(), 3);
+    main_deck.addCopies(new Scandal(), 3);
+    main_deck.addCopies(new PublicityStunt(), 3);
+    main_deck.addCopies(new Spinoff(), 3);
+    main_deck.addCopies(new Poach(), 3);
+    main_deck.addCopies(new Documentation(), 2);
+    main_deck.addCopies(new Lawyers(), 2);
+    main_deck.addCopies(new Taxes(), 2);
+    main_deck.addCopies(new Rush(), 1);
+    main_deck.addCopies(new OpenSource(), 1);
+    main_deck.addCopies(new Patent(), 1);
+    main_deck.addCopies(new Bust(), 1);
+    main_deck.addCopies(new Boom(), 1);
+    main_deck.addCopies(new Infamy(), 1);
+    main_deck.addCopies(new Nonprofit(), 1);
+    main_deck.addCopies(new Underdog(), 1);
+    return main_deck;
+    
+  }
+  
+  public static Deck getCompetitivePlayerDeck(){
+    Deck deck = new Deck();
+    deck.addCopies(new ViralMarketing(), 3);
+    deck.addCopies(new Capital(), 2);
+    deck.addCopies(new Profit(), 2);
+    deck.addCopies(new Sabotage(), 3);
+    deck.addCopies(new Breakthrough(), 1);
+    deck.addCopies(new Pivot(), 1);
+    deck.addCopies(new Damages(), 1);
+    deck.addCopies(new EpicFail(), 1);
+    deck.addCopies(new Planning(), 1);
+    return deck;
+    
   }
 
 }

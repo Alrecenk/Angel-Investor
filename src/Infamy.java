@@ -37,7 +37,7 @@ public class Infamy extends Card {
    
  //Modifies the game state when this card is invested by the given player.
   public void invest(Player player, int row, Game game, Event e){
-    player.giveFame();
+    //player.giveFame();
   }
 
  //Modifies the game state when this card is completed in a project. winner is the winner of that project

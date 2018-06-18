@@ -13,7 +13,7 @@ public class Pivot extends Card{
     Card c = null;
     if(which_deck == Player.MAIN_DECK){
       deck = game.main_deck;
-      c = game.drawCard();
+      c = game.main_deck.draw();
     }else if(which_deck >= 0){
       deck = game.start_ups.get(which_deck).deck;
       Deck drawn = game.start_ups.get(which_deck).draw(1,game);

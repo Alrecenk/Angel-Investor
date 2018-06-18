@@ -21,17 +21,21 @@ public class BasicPlayer extends Player implements Comparable {
   public double max_bust_score ; // Maximum score for a bust to be used.
   public double min_boom_score ; // Minimum score for a boom to be spent
   public double min_spinoff_score ; // Minimum score to spend a spinoff
-  
-  
+
+
   public boolean logging_enabled = false;
   public int wins = 0 ;
+  public boolean only_spend_cards; // whether or not this player will only spend cards
+  public boolean only_spend_money; // whether or not the player will only spend money
+  public int min_money_to_spend = 3; // How much money a player who only spebnd money has to have before spending it.
+  public int min_cards_to_scandal = 3; // How many cards an opponent must have for you to spend a scandal
 
   public BasicPlayer(int seed){
     this.seed = seed;
     rand = new Random(seed);
     initializeBasicWeights();
   }
-  
+
   public void setToVector(double v[]){
     int k = 8;
     money_draw_chance = Math.max(0, Math.min(v[0],1));
@@ -42,22 +46,22 @@ public class BasicPlayer extends Player implements Comparable {
     max_bust_score = v[5] ;
     min_boom_score = v[6] ;
     min_spinoff_score = v[7];
-    
-    
+
+
     Iterator<String> i = card_flip_score.keySet().iterator();
     while(i.hasNext()){
       String key = i.next();
       card_flip_score.put(key,v[k]);
       k++;
     }
-    
+
     i = card_complete_score.keySet().iterator();
     while(i.hasNext()){
       String key = i.next();
       card_complete_score.put(key,v[k]);
       k++;
     }
-    
+
     i = card_startup_score.keySet().iterator();
     while(i.hasNext()){
       String key = i.next();
@@ -65,7 +69,7 @@ public class BasicPlayer extends Player implements Comparable {
       k++;
     }
   }
-  
+
   public double[] getVector(){
     int k = 8;
     double v[] = new double[k + card_flip_score.size() + card_complete_score.size() + card_startup_score.size()];
@@ -77,22 +81,22 @@ public class BasicPlayer extends Player implements Comparable {
     v[5] = max_bust_score  ;
     v[6] = min_boom_score  ;
     v[7] = min_spinoff_score ;
-    
-    
+
+
     Iterator<String> i = card_flip_score.keySet().iterator();
     while(i.hasNext()){
       String key = i.next();
       v[k] = card_flip_score.get(key);
       k++;
     }
-    
+
     i = card_complete_score.keySet().iterator();
     while(i.hasNext()){
       String key = i.next();
       v[k] = card_complete_score.get(key);
       k++;
     }
-    
+
     i = card_startup_score.keySet().iterator();
     while(i.hasNext()){
       String key = i.next();
@@ -152,12 +156,12 @@ public class BasicPlayer extends Player implements Comparable {
     card_startup_score.put(Nonprofit.NONPROFIT_NAME, -20.0);
     card_startup_score.put(Underdog.UNDERDOG_NAME, -10.0);
     card_startup_score.put(Lawyers.LAWYERS_NAME, 1.0);
-    
+
     card_complete_score.put(Patent.PATENT_NAME, 8.0);
     card_startup_score.put(Patent.PATENT_NAME, 4.0);
 
   }
-  
+
   public void initializeRandomWeights(Random rand){
     money_draw_chance = rand.nextDouble() ;
     general_investing_multiplier = rand.nextDouble()*40-20;
@@ -207,21 +211,21 @@ public class BasicPlayer extends Player implements Comparable {
     card_startup_score.put(Nonprofit.NONPROFIT_NAME, rand.nextDouble()*40-20);
     card_startup_score.put(Underdog.UNDERDOG_NAME, rand.nextDouble()*40-20);
     card_startup_score.put(Lawyers.LAWYERS_NAME, rand.nextDouble()*40-20);
-    
+
     card_complete_score.put(Patent.PATENT_NAME, rand.nextDouble()*40-20);
     card_startup_score.put(Patent.PATENT_NAME, rand.nextDouble()*40-20);
 
   }
-  
+
   public void initializeTrainedWeights(){
-    
-    
+
+
     double v[] = new double[]{0.6688093051729413, 2.2747678808284872, 0.43750637690031624, 0.264411794714825, -3.5669829609223545, 5.272931333537395, 2.3671053974084284,
         1.2427303336394244, 21.965105601469237, -3.0303030303030303, -0.8080808080808088, 24.242424242424242, -0.6060606060606064, 2.828282828282828, 22.82828282828283, 
         0.898989898989899, 1.2929292929292928, 1.393939393939394, 0.04040404040404055, 5.030303030303031, 5.97979797979798, 1.1717171717171717, 0.3232323232323231, 0.8181818181818181,
         0.404040404040404, -0.2222222222222222, 0.31313131313131315, 1.616161616161616, -20.606060606060606, 6.969696969696969, 2.4646464646464645, 2.7272727272727275, -0.04040404040404039, 
         1.0000000000000002, -0.6262626262626263, -3.737373737373738, 0.10101010101010077};
-    
+
     setToVector(v);
   }
 
@@ -328,32 +332,32 @@ public class BasicPlayer extends Player implements Comparable {
     if(hand.countCard(EpicFail.EPIC_FAIL_NAME) > 0 && worst_complete_score < max_epic_fail_score){
       return new int[]{hand.findCard(EpicFail.EPIC_FAIL_NAME), Player.TRASH};
     }
-    
-    // Spend Spinoff if a psotive row exists
+
+    // Spend Spinoff if a positive row exists
     if(hand.countCard(Spinoff.SPINOFF_NAME) > 0 && best_complete_score > min_spinoff_score){
       return new int[]{hand.findCard(Spinoff.SPINOFF_NAME), Player.TRASH};
     }
-    
+
     // Spend damages if there's money to get
     if(hand.countCard(Damages.DAMAGES_NAME) > 0 && game.trash_pile.countCard(Money.MONEY_NAMES[player_number]) > 0){
       return new int[]{hand.findCard(Damages.DAMAGES_NAME), Player.TRASH};
     }
-    
+
     // Delay if a negative row (there's probably opposing money)
     if(hand.countCard(Delay.DELAY_NAME) > 0 && worst_complete_score < 0){
       return new int[]{hand.findCard(Delay.DELAY_NAME), Player.TRASH};
     }
-    
-    // Spend Scandal whenever you get it
-    if(hand.countCard(Scandal.SCANDAL_NAME) > 0){
+
+    // Spend Scandal if player has enough cards
+    if(hand.countCard(Scandal.SCANDAL_NAME) > 0 && game.getPlayer(1-player_number).hand.size() >= min_cards_to_scandal){
       return new int[]{hand.findCard(Scandal.SCANDAL_NAME), Player.TRASH};
     }
-    
-    // Spend Poach whenever you get it
-    if(hand.countCard(Poach.POACH_NAME) > 0){
+
+    // Spend Poach whenever you can
+    if(hand.countCard(Poach.POACH_NAME) > 0 && game.getPlayer(1-player_number).hand.size() > 0){
       return new int[]{hand.findCard(Poach.POACH_NAME), Player.TRASH};
     }
-    
+
     // Spend Taxes if you're winning by two in visible fame
     if(hand.countCard(Taxes.TAXES_NAME) > 0){
       int my_fame = getFame();
@@ -367,106 +371,131 @@ public class BasicPlayer extends Player implements Comparable {
         return new int[]{hand.findCard(Taxes.TAXES_NAME), Player.TRASH};
       }
     }
+    // Spend profit if you're not a card investor
+    if(hand.countCard(Profit.PROFIT_NAME) > 0 && only_spend_cards){
+      return new int[]{hand.findCard(Profit.PROFIT_NAME), Player.TRASH};
+    }
+    // Spend capital if you're not a card investor
+    if(hand.countCard(Capital.CAPITAL_NAME) > 0 && only_spend_cards){
+      return new int[]{hand.findCard(Capital.CAPITAL_NAME), Player.TRASH};
+    }
+    // Spend sabotage if you're not a card investor and there's a negative row
+    if(hand.countCard(Sabotage.SABOTAGE_NAME) > 0 && worst_complete_score < max_epic_fail_score && only_spend_cards){
+      return new int[]{hand.findCard(Sabotage.SABOTAGE_NAME), Player.TRASH};
+    }
     
-
-    if(logging_enabled){
-      System.out.println("Thinking about investing money...");
+    // Spend Pivot if you're not a card investor
+    if(hand.countCard(Pivot.PIVOT_NAME) > 0 && only_spend_cards){
+      return new int[]{hand.findCard(Pivot.PIVOT_NAME), Player.TRASH};
     }
-
-    // If got money, invest some money probably
-    if(hand.countCard(Money.MONEY_NAMES[player_number]) > 0){
-      int best_invest = -1;
-      double best_invest_score = 0 ;
-      for(int k=0;k<winner.length;k++){
-        StartUp s = game.start_ups.get(k);
-        StartUp ns = s.copy();
-        ns.project.add(new Money(player_number));
-        int new_winner = ns.getProjectWinner();
-        double invest_score = 0 ;
-        // Immediate benefit of changing the winner of a project by investing money
-        if(winner[k] != player_number && new_winner == player_number){ // If creates a winning_project
-          invest_score += new_win_for_invest_multiplier * (project_complete_value[k] + project_flip_value[k]);
-        } else if(new_winner == Game.NOONE && winner[k] >= 0 && winner[k] != player_number){ // Tie-ing a previously lost project
-          invest_score += new_tie_for_invest_multiplier * (project_complete_value[k] + project_flip_value[k]);
-        }
-        // Future benefit of changing overall win probabilities
-        double new_win_chance[] = ns.winProbabilities((int)expected_project_cards[k]);
-        for(int j=0; j < new_win_chance.length;j++){
-          // Change in probability of winning cards with value
-          double delta = start_up_card_value[k] * (new_win_chance[j]/(double)(total_cards[k]+1) - current_win_chance[k][j]/(double)total_cards[k]);
-          if(j == player_number){
-            invest_score +=delta;
-          }else{
-            invest_score -= delta;
-          }
-        }
-        if(invest_score > best_invest_score){
-          best_invest = k;
-          best_invest_score = invest_score;
-        }
+    
+    if(only_spend_money){
+      if(hand.countCard(Money.MONEY_NAMES[player_number]) >= min_money_to_spend){
+        return new int[]{hand.findCard(Money.MONEY_NAMES[player_number]), Player.TRASH};
       }
-      if(best_invest >= 0){
-        return new int[]{hand.findCard(Money.MONEY_NAMES[player_number]), best_invest};
+    }else{
+      if(logging_enabled){
+        System.out.println("Thinking about investing money...");
       }
-    }
 
-    if(logging_enabled){
-      System.out.println("Thinking about investing cards...");
-    }
-
-    // Consider investing some cards that have value in start_ups.
-    Iterator<String> invest_iterator = card_startup_score.keySet().iterator();
-    int best_invest_card = -1;
-    int best_invest_location = -1;
-    double best_invest_score = 0 ;
-    while(invest_iterator.hasNext()){ // For each possible card
-      String card_name = invest_iterator.next();
-      if(hand.countCard(card_name) > 0){ // If you've got it
-        double startup_value = 0;
-        if(card_startup_score.containsKey(card_name)){
-          startup_value += card_startup_score.get(card_name);
-        }
-        double project_value = 0;
-        if(card_complete_score.containsKey(card_name)){
-          project_value += card_complete_score.get(card_name);
-        }
-        if(card_flip_score.containsKey(card_name)){
-          project_value += card_flip_score.get(card_name);
-        }
-        for(int k=0;k<winner.length;k++){ // For each place you could invest it
-          double invest_value = 0;
-          // Points for project you can win
-          if(winner[k] == player_number){
-            invest_value += project_value;
-          }else if(winner[k] >= 0){
-            invest_value -= project_value  ;
+      // If got money, invest some money probably
+      if(hand.countCard(Money.MONEY_NAMES[player_number]) > 0){
+        int best_invest = -1;
+        double best_invest_score = 0 ;
+        for(int k=0;k<winner.length;k++){
+          StartUp s = game.start_ups.get(k);
+          StartUp ns = s.copy();
+          ns.project.add(new Money(player_number));
+          int new_winner = ns.getProjectWinner();
+          double invest_score = 0 ;
+          // Immediate benefit of changing the winner of a project by investing money
+          if(winner[k] != player_number && new_winner == player_number){ // If creates a winning_project
+            invest_score += new_win_for_invest_multiplier * (project_complete_value[k] + project_flip_value[k]);
+          } else if(new_winner == Game.NOONE && winner[k] >= 0 && winner[k] != player_number){ // Tie-ing a previously lost project
+            invest_score += new_tie_for_invest_multiplier * (project_complete_value[k] + project_flip_value[k]);
           }
-          // Points for general startup quality
-          for(int j=0;j<current_win_chance[k].length;j++){
-            double delta = general_investing_multiplier * startup_value * current_win_chance[k][j]/total_cards[k];
+          // Future benefit of changing overall win probabilities
+          double new_win_chance[] = ns.winProbabilities((int)expected_project_cards[k]);
+          for(int j=0; j < new_win_chance.length;j++){
+            // Change in probability of winning cards with value
+            double delta = start_up_card_value[k] * (new_win_chance[j]/(double)(total_cards[k]+1) - current_win_chance[k][j]/(double)total_cards[k]);
             if(j == player_number){
-              invest_value += delta;
+              invest_score +=delta;
             }else{
-              invest_value -= delta;
+              invest_score -= delta;
             }
           }
-          if(invest_value > best_invest_score){
-            best_invest_score = invest_value;
-            best_invest_card = hand.findCard(card_name);
-            best_invest_location = k;
+          if(invest_score > best_invest_score){
+            best_invest = k;
+            best_invest_score = invest_score;
           }
+        }
+        if(best_invest >= 0){
+          return new int[]{hand.findCard(Money.MONEY_NAMES[player_number]), best_invest};
         }
       }
     }
-    if(best_invest_card >= 0){
-      return new int[]{best_invest_card, best_invest_location};
+
+    
+    if(only_spend_cards){
+      
+    }else{ // Consider investing some cards that have value in start_ups.
+      if(logging_enabled){
+        System.out.println("Thinking about investing cards...");
+      }
+      Iterator<String> invest_iterator = card_startup_score.keySet().iterator();
+      int best_invest_card = -1;
+      int best_invest_location = -1;
+      double best_invest_score = 0 ;
+      while(invest_iterator.hasNext()){ // For each possible card
+        String card_name = invest_iterator.next();
+        if(hand.countCard(card_name) > 0){ // If you've got it
+          double startup_value = 0;
+          if(card_startup_score.containsKey(card_name)){
+            startup_value += card_startup_score.get(card_name);
+          }
+          double project_value = 0;
+          if(card_complete_score.containsKey(card_name)){
+            project_value += card_complete_score.get(card_name);
+          }
+          if(card_flip_score.containsKey(card_name)){
+            project_value += card_flip_score.get(card_name);
+          }
+          for(int k=0;k<winner.length;k++){ // For each place you could invest it
+            double invest_value = 0;
+            // Points for project you can win
+            if(winner[k] == player_number){
+              invest_value += project_value;
+            }else if(winner[k] >= 0){
+              invest_value -= project_value  ;
+            }
+            // Points for general startup quality
+            for(int j=0;j<current_win_chance[k].length;j++){
+              double delta = general_investing_multiplier * startup_value * current_win_chance[k][j]/total_cards[k];
+              if(j == player_number){
+                invest_value += delta;
+              }else{
+                invest_value -= delta;
+              }
+            }
+            if(invest_value > best_invest_score){
+              best_invest_score = invest_value;
+              best_invest_card = hand.findCard(card_name);
+              best_invest_location = k;
+            }
+          }
+        }
+      }
+      if(best_invest_card >= 0){
+        return new int[]{best_invest_card, best_invest_location};
+      }
     }
 
     if(logging_enabled){
       System.out.println("Completing project " + best_complete_row + " scoring : " + best_complete_score + " .");
     }
 
-    
+
     // Complete your best project if nothing else good to do.
     return new int[]{Player.CHOICE, best_complete_row};   
 
@@ -479,8 +508,8 @@ public class BasicPlayer extends Player implements Comparable {
     if(Math.random() < .1){
       return (int)(rand.nextDouble() * game.start_ups.size());
     }
-    
- // Calculate some general stats about the board
+
+    // Calculate some general stats about the board
     int winner[] = new int[game.start_ups.size()] ; // Who would win each project if it were completed right now
     int total_cards[] = new int[game.start_ups.size()] ; // Total cards in each start-up
     double project_complete_value[] = new double[game.start_ups.size()]; // Expected value of completing each project
@@ -518,7 +547,7 @@ public class BasicPlayer extends Player implements Comparable {
         best_complete_row = k;
       }
     }
-    
+
     if(c.name == EpicFail.EPIC_FAIL_NAME || c.name == Patent.PATENT_NAME){
       return worst_complete_row;
     }
@@ -531,7 +560,7 @@ public class BasicPlayer extends Player implements Comparable {
   }
 
   public int[] chooseProjectCardforEffect(Card c, Game game) {
-    // if it's a sabotageor delay then try to select an opponent's money
+    // if it's a sabotage or delay then try to select an opponent's money
     if(c.name == Sabotage.SABOTAGE_NAME || c.name == Delay.DELAY_NAME){
       for(int k=0;k<game.start_ups.size();k++){
         for(int j=0;j<game.start_ups.get(k).project.size();j++){
@@ -554,8 +583,18 @@ public class BasicPlayer extends Player implements Comparable {
   }
 
   public int chooseDeckforEffect(Card c, Game game) {
-    // Always select a start_up deck to try to get rid of opponent's money
-    return (int)(rand.nextDouble() *game.start_ups.size());
+    int best_deck = (int)(rand.nextDouble() *game.start_ups.size());
+    double most_money = 0 ;
+    for(int k=0;k<game.start_ups.size();k++){
+      Deck d = game.start_ups.get(k).deck;
+      double money = d.countCard(Money.MONEY_NAMES[1-player_number]);
+      if(money > most_money){
+        most_money = money;
+        best_deck = k;
+      }
+    }
+    return best_deck;
+    
   }
 
   public int choosePlayerforEffect(Card c, Game game) {
@@ -573,10 +612,13 @@ public class BasicPlayer extends Player implements Comparable {
   }
 
   public int trashCard(Card c, int location, Game game) {
+    if(only_spend_money){// If not an investor then trash everything.
+      return Player.TRASH;
+    }
     if(c instanceof Money){
       int player = ((Money)c).player;
       // Always trash other players' money
-      // If the location is your hand then it's probably a publicity stunt which you want to do if possible
+      // If the location is your hand then it's publicity stunt or you'r spending which you want to do if possible.
       if(player != player_number || location == Player.HAND){
         return Player.TRASH;
       }
@@ -614,11 +656,11 @@ public class BasicPlayer extends Player implements Comparable {
     return r;
   }
 
-  
+
   public int compareTo(Object other) {
     return ((BasicPlayer)other).wins - wins;
   }
-  
+
   // Crosses two weight vectors to create a child by selecting each value from a random parent.
   public static double[] cross(double a[], double b[], Random rand){
     double c[] = new double[a.length];
@@ -627,7 +669,7 @@ public class BasicPlayer extends Player implements Comparable {
     }
     return c ;
   }
-  
+
   // Mutates a weight vector by adding -s to size to mutations weights.
   public static double[] mutate(double a[], int mutations, double size, Random rand){
     double c[] = new double[a.length];
@@ -640,12 +682,12 @@ public class BasicPlayer extends Player implements Comparable {
     }
     return c ;
   }
-  
+
   // Plays every AI in the array against every other AI, accumulates the wins on the BasicPlayer wins variable
   public static void playAllMatches(BasicPlayer[] population, Random rand){
     for(int k=1;k<population.length;k++){
       for(int j=0;j<k;j++){
-        Game g = new Game(new Player[]{population[k], population[j]}, Deck.getMainDeck(), rand.nextInt());
+        Game g = new Game(new Player[]{population[k], population[j]}, Deck.getMainDeck(), null, rand.nextInt());
         g.run();
         if(population[k].finalScore() > population[j].finalScore()){
           population[k].wins++;
@@ -655,7 +697,7 @@ public class BasicPlayer extends Player implements Comparable {
       }
     }
   }
-  
+
   public static int weightedRandomSelect(int weights[], Random rand){
     int r = rand.nextInt(weights[weights.length-1]);
     int min_k= 0, max_k = weights.length - 1;
@@ -669,7 +711,7 @@ public class BasicPlayer extends Player implements Comparable {
     }
     return min_k;
   }
-    
+
   public static void print(double[] v){
     String s = "{" + v[0] ;
     for(int k=1; k < v.length;k++){
@@ -678,11 +720,11 @@ public class BasicPlayer extends Player implements Comparable {
     s+= "}";
     System.out.println(s);
   }
-  
+
   public static void main(String args[]){
     axisSearch();
   }
-  
+
   public static BasicPlayer[] rangeMutate(BasicPlayer bp, int index, int amount){
     double v[] = bp.getVector();
     BasicPlayer population[] = new BasicPlayer[amount];
@@ -697,7 +739,7 @@ public class BasicPlayer extends Player implements Comparable {
     }
     return population;
   }
-    
+
   public static void axisSearch(){
     int generations = 100;
     int population_size = 100;
@@ -720,9 +762,9 @@ public class BasicPlayer extends Player implements Comparable {
       }
     }
   }
-  
-  
-  
+
+
+
   public static void geneticAlgorithm(){
     int population_size = 20;
     int keep = 5;
@@ -730,7 +772,7 @@ public class BasicPlayer extends Player implements Comparable {
     int generations = 1000;
     double mutations = 0;
     double mutation_size = 1;
-    
+
     BasicPlayer[] population = new BasicPlayer[population_size];
     Random rand = new Random();
     population[0] = new BasicPlayer(0); // Add in default unmodified
@@ -742,9 +784,9 @@ public class BasicPlayer extends Player implements Comparable {
       v = mutate(v, (int)mutations, mutation_size, rand);
       population[k].setToVector(v);
     }
-    
+
     boolean extra_logging = false;
-    
+
     for(int g = 0 ; g < generations;g++){
       System.out.println("Generation " + g +" playing games...");
       playAllMatches(population, rand);
@@ -760,8 +802,8 @@ public class BasicPlayer extends Player implements Comparable {
       }
       System.out.println("Best So Far:");
       print(population[0].getVector());
-      
-      
+
+
       BasicPlayer[] new_population = new BasicPlayer[population_size];
       new_population[0] = new BasicPlayer(-g);
       for(int k=1;k<keep;k++){
@@ -772,7 +814,7 @@ public class BasicPlayer extends Player implements Comparable {
         new_population[k] = new BasicPlayer(k*g);
         new_population[k].initializeRandomWeights(rand);
       }
-      
+
       for(int k=keep+random;k<population_size;k++){
         int p1 = weightedRandomSelect(sum_wins, rand);
         int p2 = weightedRandomSelect(sum_wins, rand);
@@ -787,13 +829,13 @@ public class BasicPlayer extends Player implements Comparable {
       population = new_population;
       mutation_size *= .9;
     }
-    
+
   }
-    
-    
-  
-  
+
+
+
+
 
 }
 
-  
+
